@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rekindle & Rise</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero">
+        <div>
+          <p class="eyebrow">Private community platform</p>
+          <h1>Rekindle & Rise</h1>
+          <p class="subtitle">A calm, privacy-first space for healing, connection, and trusted support.</p>
+        </div>
+        <div class="hero-actions">
+          <button id="signupBtn">Create account</button>
+          <button id="loginBtn" class="secondary">Sign in</button>
+        </div>
+      </header>
+
+      <main class="grid">
+        <section class="card">
+          <h2>Onboarding</h2>
+          <form id="signupForm">
+            <input id="displayName" placeholder="Display name" />
+            <input id="email" type="email" placeholder="Email" />
+            <input id="password" type="password" placeholder="Password" />
+            <select id="roleSelect">
+              <option value="survivor">Survivor</option>
+              <option value="supporter">Supporter</option>
+              <option value="organization">Organization</option>
+            </select>
+            <button type="submit">Continue</button>
+          </form>
+        </section>
+
+        <section class="card">
+          <h2>Dashboard</h2>
+          <div class="stat-row">
+            <div class="stat">3 events</div>
+            <div class="stat">2 groups</div>
+            <div class="stat">6 entries</div>
+          </div>
+          <div class="panel">
+            <h3>Today’s prompt</h3>
+            <p>What felt grounding today?</p>
+          </div>
+          <div class="panel">
+            <h3>Privacy defaults</h3>
+            <p id="privacySummary">Private by default.</p>
+          </div>
+        </section>
+
+        <section class="card">
+          <h2>Journal</h2>
+          <form id="journalForm">
+            <input id="journalTitle" placeholder="Entry title" />
+            <textarea id="journalBody" placeholder="Write your reflection..."></textarea>
+            <button type="submit">Save entry</button>
+          </form>
+          <ul id="entriesList"></ul>
+        </section>
+
+        <section class="card">
+          <h2>Privacy Settings</h2>
+          <form id="privacyForm">
+            <label>Profile visibility
+              <select id="profileVisibility">
+                <option value="private">Only me</option>
+                <option value="groups">My groups</option>
+                <option value="community">Community</option>
+              </select>
+            </label>
+            <label>Journal visibility
+              <select id="journalVisibility">
+                <option value="private">Only me</option>
+                <option value="groups">My groups</option>
+                <option value="community">Community</option>
+              </select>
+            </label>
+            <button type="submit">Save privacy</button>
+          </form>
+        </section>
+
+        <section class="card">
+          <h2>Communities</h2>
+          <div class="event-list" id="communityList"></div>
+        </section>
+
+        <section class="card">
+          <h2>Events</h2>
+          <div class="event-list" id="eventList"></div>
+        </section>
+      </main>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>

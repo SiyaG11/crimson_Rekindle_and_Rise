@@ -1,0 +1,10 @@
+{
+  "name": "rekindle-rise-starter",
+  "private": true,
+  "version": "0.1.0",
+  "scripts": {
+    "dev": "node apps/api/server.js",
+    "start": "node apps/api/server.js",
+    "test": "node --test apps/api/tests/*.test.js"
+  }
+}

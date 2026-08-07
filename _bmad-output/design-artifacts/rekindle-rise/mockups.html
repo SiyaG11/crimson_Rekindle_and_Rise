@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Rekindle & Rise — Premium UX Mockups</title>
+    <style>
+      :root {
+        --bg: #f5efe8;
+        --surface: #fcfaf7;
+        --surface-2: #f2e7da;
+        --ink: #2d2724;
+        --muted: #6e625a;
+        --accent: #a65f49;
+        --accent-2: #6f7f57;
+        --border: #e2d5c8;
+        --shadow: 0 16px 40px rgba(49, 34, 25, 0.08);
+      }
+      * { box-sizing: border-box; }
+      body { margin: 0; font-family: Inter, "Segoe UI", sans-serif; background: linear-gradient(180deg, #f9f3eb 0%, var(--bg) 100%); color: var(--ink); }
+      .page { max-width: 1320px; margin: 0 auto; padding: 32px 20px 80px; }
+      .hero { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 28px; box-shadow: var(--shadow); margin-bottom: 24px; }
+      .hero h1 { margin: 0 0 8px; font-size: 30px; }
+      .hero p { margin: 0; color: var(--muted); max-width: 760px; line-height: 1.6; }
+      .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
+      .card { background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 20px; box-shadow: var(--shadow); }
+      .card h2 { margin: 0 0 14px; font-size: 18px; }
+      .pill { display: inline-block; padding: 5px 10px; border-radius: 999px; background: var(--surface-2); color: var(--accent); font-size: 12px; font-weight: 700; margin-bottom: 10px; }
+      .mock { border: 1px solid var(--border); border-radius: 16px; padding: 16px; background: linear-gradient(180deg, #fffdfa 0%, #f7efe7 100%); }
+      .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 8px 0; }
+      .btn { padding: 9px 12px; border-radius: 999px; border: none; font-weight: 700; cursor: pointer; }
+      .btn.primary { background: var(--accent); color: white; }
+      .btn.secondary { background: #efe0d2; color: var(--ink); }
+      .chip { display: inline-block; padding: 6px 10px; border-radius: 999px; background: #ebf2e6; color: var(--accent-2); margin: 4px 6px 4px 0; font-size: 12px; font-weight: 600; }
+      .muted { color: var(--muted); font-size: 13px; line-height: 1.5; }
+      .stack { display: grid; gap: 10px; }
+      .panel { border: 1px solid var(--border); background: #fff; border-radius: 12px; padding: 12px; }
+      .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0; }
+      .stat { background: #f8efe7; border-radius: 12px; padding: 10px; }
+      .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 10px; }
+      .day { padding: 8px; text-align: center; border-radius: 10px; background: #f7efe7; color: var(--muted); font-size: 12px; }
+      .day.active { background: var(--accent); color: white; }
+      .map { height: 120px; border-radius: 12px; background: linear-gradient(135deg, #e4efe0 0%, #d8e8eb 100%); border: 1px dashed #b8c9b4; position: relative; overflow: hidden; margin-top: 10px; }
+      .map::before { content: ""; position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(0,0,0,0.12) 1px, transparent 1px); background-size: 22px 22px; opacity: 0.3; }
+      .map .pin { position: absolute; width: 12px; height: 12px; background: var(--accent); border-radius: 999px; box-shadow: 0 0 0 6px rgba(166,95,73,0.18); }
+      .map .pin.one { top: 32px; left: 28px; }
+      .map .pin.two { top: 54px; right: 34px; }
+      .map .pin.three { bottom: 22px; left: 46px; }
+      @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+    </style>
+  </head>
+  <body>
+    <div class="page">
+      <div class="hero">
+        <h1>Rekindle & Rise — Premium UX Mockups</h1>
+        <p>This refreshed set presents a more comprehensive, product-ready experience for onboarding, journaling, community engagement, and event discovery. The screens are designed to feel calm, credible, and polished for both mobile and desktop.</p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <span class="pill">01 · Onboarding</span>
+          <h2>Welcome & Role Selection</h2>
+          <div class="mock">
+            <div class="row"><strong>Rekindle & Rise</strong><span class="muted">Trusted community</span></div>
+            <div class="stack">
+              <div class="panel">
+                <strong>Welcome back, Maya</strong>
+                <p class="muted">Choose the role that feels closest to your experience and begin with privacy-first defaults.</p>
+              </div>
+              <div class="row">
+                <div class="chip">Survivor</div><div class="chip">Supporter</div><div class="chip">Organization</div>
+              </div>
+              <div class="panel">
+                <div class="row"><span>Age & consent</span><span class="muted">Verified</span></div>
+                <div class="row"><span>Privacy setup</span><span class="muted">Private by default</span></div>
+              </div>
+              <button class="btn primary">Continue</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <span class="pill">02 · Dashboard</span>
+          <h2>Personal Home Experience</h2>
+          <div class="mock">
+            <div class="row"><strong>Home</strong><span class="muted">Notifications · Search</span></div>
+            <div class="stat-row">
+              <div class="stat"><strong>3</strong><br/><span class="muted">Events</span></div>
+              <div class="stat"><strong>2</strong><br/><span class="muted">Groups</span></div>
+              <div class="stat"><strong>6</strong><br/><span class="muted">Entries</span></div>
+            </div>
+            <div class="panel">
+              <strong>Today’s prompt</strong>
+              <p class="muted">What felt grounding today, and what do you want to remember?</p>
+            </div>
+            <div class="panel">
+              <div class="row"><span>Upcoming events</span><span class="muted">See all</span></div>
+              <div class="chip">Community circle</div><div class="chip">Resource workshop</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <span class="pill">03 · Community</span>
+          <h2>Group Discovery & Moderation</h2>
+          <div class="mock">
+            <div class="row"><strong>Find your people</strong><span class="muted">Filter</span></div>
+            <div class="panel">
+              <div class="row"><span>Returning to School</span><span class="muted">Moderated</span></div>
+              <p class="muted">A supportive space for school and workplace transitions.</p>
+            </div>
+            <div class="panel">
+              <div class="row"><span>Caregiver Support</span><span class="muted">Verified</span></div>
+              <p class="muted">A calm place for families and supporters to share resources.</p>
+            </div>
+            <div class="panel">
+              <div class="row"><span>Safety tools</span><span class="muted">Visible</span></div>
+              <p class="muted">Report, mute, or block options remain easy to access.</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <span class="pill">04 · Journal</span>
+          <h2>Private Reflection Workspace</h2>
+          <div class="mock">
+            <div class="row"><strong>Journal</strong><span class="muted">Private</span></div>
+            <div class="panel">
+              <strong>Prompt of the day</strong>
+              <p class="muted">What support do I need right now?</p>
+            </div>
+            <div class="panel" style="min-height: 92px;">
+              <p class="muted">Write freely, use voice-to-text, or attach a photo. Your entries stay private unless you choose otherwise.</p>
+            </div>
+            <div class="row">
+              <button class="btn secondary">Save draft</button>
+              <button class="btn primary">Add entry</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <span class="pill">05 · Events</span>
+          <h2>Event Discovery with Calendar & Map</h2>
+          <div class="mock">
+            <div class="row"><strong>Events near you</strong><span class="muted">Today · Nearby</span></div>
+            <div class="panel">
+              <div class="row"><span>August 2026</span><span class="muted">Calendar view</span></div>
+              <div class="calendar">
+                <div class="day">Mo</div><div class="day">Tu</div><div class="day">We</div><div class="day">Th</div><div class="day">Fr</div><div class="day">Sa</div><div class="day">Su</div>
+                <div class="day">3</div><div class="day">4</div><div class="day">5</div><div class="day active">6</div><div class="day">7</div><div class="day">8</div><div class="day">9</div>
+              </div>
+            </div>
+            <div class="panel">
+              <strong>Community Circle</strong>
+              <p class="muted">Sat · 6:00 PM · Virtual · Verified organization</p>
+              <div class="map">
+                <div class="pin one"></div>
+                <div class="pin two"></div>
+                <div class="pin three"></div>
+              </div>
+            </div>
+            <div class="row"><button class="btn secondary">View details</button><button class="btn primary">RSVP</button></div>
+          </div>
+        </div>
+
+        <div class="card">
+          <span class="pill">06 · Profile</span>
+          <h2>Profile & Privacy Controls</h2>
+          <div class="mock">
+            <div class="row"><strong>Maya R.</strong><span class="muted">Survivor</span></div>
+            <div class="panel">
+              <strong>Visible to</strong>
+              <div class="chip">Only me</div><div class="chip">My groups</div><div class="chip">Everyone</div>
+            </div>
+            <div class="panel">
+              <div class="row"><span>Notifications</span><span class="muted">On</span></div>
+              <div class="row"><span>Journal export</span><span class="muted">Available</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
