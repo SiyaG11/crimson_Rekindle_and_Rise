@@ -5,6 +5,16 @@
   "scripts": {
     "dev": "node apps/api/server.js",
     "start": "node apps/api/server.js",
-    "test": "node --test apps/api/tests/*.test.js"
+    "test": "node --test apps/api/tests/*.test.js",
+    "test:watch": "node --test --watch apps/api/tests/*.test.js",
+    "seed:dev": "node scripts/seed-dev-data.js",
+    "db:migrate": "node scripts/db-migrate.js",
+    "db:seed": "node scripts/db-seed.js",
+    "staging:smoke": "node scripts/staging-smoke.js",
+    "deploy:staging:check": "npm run ci && npm run staging:smoke",
+    "health:infra": "curl -s http://127.0.0.1:3000/health/infrastructure",
+    "lint": "node --check apps/api/server.js && node --check apps/web/app.js",
+    "format:check": "node scripts/check-format.js",
+    "ci": "npm run lint && npm run format:check && npm test"
   }
 }

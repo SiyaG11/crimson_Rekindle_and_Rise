@@ -1,0 +1,56 @@
+name: Staging Deploy and Smoke
+
+on:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  quality-and-smoke:
+    runs-on: ubuntu-latest
+    env:
+      STAGING_URL: ${{ secrets.STAGING_URL }}
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: |
+          if [ -f package-lock.json ]; then
+            npm ci --ignore-scripts
+          else
+            npm install --ignore-scripts
+          fi
+
+      - name: Run quality gates
+        run: npm run ci
+
+      - name: Run staging smoke checks
+        run: |
+          if [ -z "$STAGING_URL" ]; then
+            echo "STAGING_URL secret not configured. Falling back to local default target."
+          fi
+          npm run staging:smoke
+
+  deploy-staging:
+    if: github.event_name == 'workflow_dispatch'
+    needs: quality-and-smoke
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger deployment hook
+        env:
+          DEPLOY_STAGING_HOOK: ${{ secrets.DEPLOY_STAGING_HOOK }}
+        run: |
+          if [ -z "$DEPLOY_STAGING_HOOK" ]; then
+            echo "DEPLOY_STAGING_HOOK not configured; skipping deploy trigger."
+            exit 0
+          fi
+          curl -fsSL -X POST "$DEPLOY_STAGING_HOOK"
+          echo "Deployment hook triggered."

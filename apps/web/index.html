@@ -7,12 +7,16 @@
     <link rel="stylesheet" href="/styles.css" />
   </head>
   <body>
+    <a class="skip-link" href="#mainContent">Skip to main content</a>
     <div class="app-shell">
       <header class="hero">
-        <div>
-          <p class="eyebrow">Private community platform</p>
-          <h1>Rekindle & Rise</h1>
-          <p class="subtitle">A calm, privacy-first space for healing, connection, and trusted support.</p>
+        <div class="brand-block">
+          <img class="brand-logo" src="/logo.svg" alt="Rekindle & Rise logo" />
+          <div>
+            <p class="eyebrow">Private community platform</p>
+            <h1>Rekindle & Rise</h1>
+            <p class="subtitle">A calm, privacy-first space for healing, connection, and trusted support.</p>
+          </div>
         </div>
         <div class="hero-actions">
           <button id="signupBtn">Create account</button>
@@ -20,78 +24,409 @@
         </div>
       </header>
 
-      <main class="grid">
-        <section class="card">
+      <main id="mainContent" class="grid">
+        <section class="card area-onboarding">
           <h2>Onboarding</h2>
+          <div class="onboarding-hero">
+            <p class="eyebrow">Step 1 of 3</p>
+            <h3>Start private, move gently, and choose what fits.</h3>
+            <p>Rekindle & Rise keeps new accounts private by default, with calm guidance before you enter the dashboard.</p>
+          </div>
+          <div class="onboarding-progress" aria-label="Onboarding progress">
+            <span class="step-pill step-pill-active">Welcome</span>
+            <span class="step-pill">Personalize</span>
+            <span class="step-pill">Enter dashboard</span>
+          </div>
+          <div id="signupState" class="state-empty">Create an account to unlock private journaling and community actions.</div>
           <form id="signupForm">
-            <input id="displayName" placeholder="Display name" />
-            <input id="email" type="email" placeholder="Email" />
-            <input id="password" type="password" placeholder="Password" />
-            <select id="roleSelect">
-              <option value="survivor">Survivor</option>
-              <option value="supporter">Supporter</option>
-              <option value="organization">Organization</option>
-            </select>
-            <button type="submit">Continue</button>
+            <div id="displayNameRow">
+              <input id="displayName" aria-label="Display name" placeholder="Display name" required minlength="2" />
+            </div>
+            <input id="email" type="email" aria-label="Email" placeholder="Email" required />
+            <input id="password" type="password" aria-label="Password" placeholder="Password" required minlength="8" />
+            <div id="roleRow">
+              <select id="roleSelect" aria-label="Role" required>
+                <option value="survivor">Survivor</option>
+                <option value="volunteer">Volunteer</option>
+                <option value="caregiver">Caregiver</option>
+              </select>
+            </div>
+            <div id="privacyDefaultsRow" class="onboarding-panel">
+              <label>Profile visibility
+                <select id="onboardProfileVisibility">
+                  <option value="private">Only me</option>
+                  <option value="followers">My followers</option>
+                  <option value="everyone">Everyone</option>
+                </select>
+              </label>
+              <label>Journal visibility
+                <select id="onboardJournalVisibility">
+                  <option value="private">Only me</option>
+                  <option value="followers">My followers</option>
+                  <option value="everyone">Everyone</option>
+                </select>
+              </label>
+              <label>Story sharing
+                <select id="onboardStorySharing">
+                  <option value="private">Only me</option>
+                  <option value="followers">My followers</option>
+                  <option value="everyone">Everyone</option>
+                </select>
+              </label>
+              <p class="helper-copy">These are your first privacy defaults and can be changed later.</p>
+            </div>
+            <label id="consentRow" class="checkbox-row">
+              <input id="consentAccepted" type="checkbox" required />
+              I agree to respectful participation and understand that accounts begin private by default.
+            </label>
+            <button id="authSubmitBtn" type="submit">Continue</button>
           </form>
         </section>
 
-        <section class="card">
+        <section class="card area-dashboard">
           <h2>Dashboard</h2>
+          <div class="dashboard-shell">
+            <div>
+              <p class="eyebrow" id="dashboardRole">Guest view</p>
+              <h3 id="dashboardGreeting">A quiet place to begin.</h3>
+              <p id="dashboardStatus">Sign in to see personalized support, activity, and next steps.</p>
+            </div>
+            <div class="dashboard-next" id="dashboardNextEvent">
+              <span class="dashboard-next-label">Next activity</span>
+              <strong>Community Circle</strong>
+              <span>Virtual · Verified</span>
+            </div>
+          </div>
+          <div class="dashboard-actions">
+            <button type="button" class="secondary" data-scroll-target="journalForm">Write a journal entry</button>
+            <button type="button" class="secondary" data-scroll-target="communityList">Browse communities</button>
+            <button type="button" class="secondary" data-scroll-target="eventList">View events</button>
+            <button type="button" class="secondary" data-scroll-target="socialForm">Open follower posts</button>
+          </div>
           <div class="stat-row">
             <div class="stat">3 events</div>
             <div class="stat">2 groups</div>
             <div class="stat">6 entries</div>
           </div>
+          <div class="trust-line">
+            <span class="badge badge-private">Private profile</span>
+            <span class="badge badge-moderated">Moderated spaces</span>
+            <span class="badge badge-verified">Verified events</span>
+          </div>
           <div class="panel">
             <h3>Today’s prompt</h3>
             <p>What felt grounding today?</p>
+          </div>
+          <div class="panel challenge-panel">
+            <div class="challenge-header">
+              <div>
+                <h3>Daily morale boost</h3>
+                <p id="challengeText">One small calming action for today.</p>
+              </div>
+              <button id="challengeRefreshBtn" type="button" class="secondary">Refresh</button>
+            </div>
+            <div class="challenge-actions">
+              <button id="challengeCompleteBtn" type="button">Mark done</button>
+              <span id="challengeStatus" class="challenge-status">Not completed yet.</span>
+            </div>
           </div>
           <div class="panel">
             <h3>Privacy defaults</h3>
             <p id="privacySummary">Private by default.</p>
           </div>
+          <div id="privacyState" class="state-empty">Sign in to view and manage your current privacy settings.</div>
         </section>
 
-        <section class="card">
-          <h2>Journal</h2>
-          <form id="journalForm">
-            <input id="journalTitle" placeholder="Entry title" />
-            <textarea id="journalBody" placeholder="Write your reflection..."></textarea>
-            <button type="submit">Save entry</button>
+        <section class="card area-profile">
+          <h2>Profile Management</h2>
+          <div id="profileState" class="state-empty">Edit your display name and bio when you want to refine your profile.</div>
+          <div class="panel profile-summary">
+            <h3 id="profileSummaryName">Display name</h3>
+            <p id="profileSummaryRole">Role</p>
+            <p id="profileSummaryMeta">Location and photo are optional.</p>
+          </div>
+          <form id="profileForm">
+            <label>Display name
+              <input id="profileDisplayName" placeholder="Your display name" />
+            </label>
+            <label>Bio
+              <textarea id="profileBio" placeholder="A short, kind bio"></textarea>
+            </label>
+            <label>Location
+              <input id="profileLocation" placeholder="City, state, or region" />
+            </label>
+            <label>Profile photo
+              <input id="profilePhotoUpload" type="file" accept="image/*" aria-label="Upload profile photo" />
+            </label>
+            <div id="profilePhotoPreview" class="post-image-preview state-empty">No photo selected.</div>
+            <div class="action-row">
+              <button type="submit">Save profile</button>
+              <button id="profilePhotoRemoveBtn" type="button" class="secondary">Remove photo</button>
+            </div>
           </form>
+        </section>
+
+        <section class="card area-social">
+          <h2>Follower Posts</h2>
+          <div id="socialState" class="state-empty">Sign in to post and see updates from the people in your follower circle.</div>
+          <div class="social-summary">
+            <div class="social-stat"><strong id="followersCount">0</strong><span>Followers</span></div>
+            <div class="social-stat"><strong id="followingCount">0</strong><span>Following</span></div>
+            <div class="social-stat"><strong id="socialFeedCount">0</strong><span>Posts in feed</span></div>
+          </div>
+          <div class="social-toolbar">
+            <button type="button" class="secondary active" data-social-scope="followers">Followers feed</button>
+            <button type="button" class="secondary" data-social-scope="following">Following feed</button>
+            <button type="button" class="secondary" data-social-scope="all">Everyone</button>
+          </div>
+          <form id="followForm" class="social-inline-form">
+            <input id="followEmail" type="email" aria-label="Request follow by email" placeholder="Request by email" />
+            <button type="submit" class="secondary">Request follow</button>
+          </form>
+          <form id="socialForm">
+            <textarea id="socialPostBody" aria-label="Post message" placeholder="Share a small, hopeful post with your follower circle..."></textarea>
+            <label class="upload-row">Photo
+              <input id="socialPostImage" type="file" accept="image/*" />
+            </label>
+            <div id="socialImagePreview" class="post-image-preview state-empty">No photo selected.</div>
+            <label>Audience
+              <select id="socialAudience">
+                <option value="followers">Followers</option>
+                <option value="following">Following</option>
+              </select>
+            </label>
+            <button type="submit">Post update</button>
+          </form>
+          <div class="social-lists">
+            <div class="social-list-block">
+              <h3>People who follow you</h3>
+              <div id="followersList" class="chip-list"></div>
+            </div>
+            <div class="social-list-block">
+              <h3>People you follow</h3>
+              <div id="followingList" class="chip-list"></div>
+            </div>
+          </div>
+          <div class="social-catalog">
+            <div class="social-list-block">
+              <h3>Discover people</h3>
+              <div id="userDirectory" class="directory-grid"></div>
+            </div>
+            <div class="social-list-block social-preview-block">
+              <h3>Profile preview</h3>
+              <div id="selectedProfileState" class="state-empty">Click a person to view their profile and request to follow them.</div>
+              <div id="selectedProfileDetail" class="profile-detail"></div>
+            </div>
+          </div>
+          <div class="social-list-block">
+            <h3>Follow requests</h3>
+            <div id="incomingRequests" class="request-list"></div>
+          </div>
+          <div id="socialFeed" class="social-feed"></div>
+        </section>
+
+        <section class="card area-journal">
+          <h2>Journal</h2>
+          <div class="journal-privacy-line">
+            <span class="badge badge-private">Private by default</span>
+            <span class="muted">Entries stay private unless you choose a broader audience per entry.</span>
+          </div>
+          <div id="journalState" class="state-empty">No entries yet. Add your first reflection when you are ready.</div>
+          <div class="panel journal-challenge-panel">
+            <div class="challenge-header">
+              <div>
+                <h3>Daily journal challenge</h3>
+                <p id="journalChallengeText">A fun reflection challenge is ready.</p>
+              </div>
+              <button id="journalChallengeShuffleBtn" type="button" class="secondary">Surprise me</button>
+            </div>
+            <p id="journalChallengeHint" class="muted">Hint: small wins count.</p>
+            <div class="journal-challenge-stats">
+              <span id="journalChallengeStreak" class="badge badge-private">Streak: 0 days</span>
+              <span id="journalChallengeCompleted" class="badge badge-verified">Completed: 0</span>
+            </div>
+            <div class="challenge-actions">
+              <button id="journalChallengeCompleteBtn" type="button">Mark challenge complete</button>
+              <button id="journalChallengeHintBtn" type="button" class="secondary">Reveal hint</button>
+              <button id="journalChallengeSkipBtn" type="button" class="secondary">Skip today</button>
+              <span id="journalChallengeStatus" class="challenge-status">Choose an action to begin.</span>
+            </div>
+          </div>
+          <div class="panel journal-prompt-panel">
+            <div class="challenge-header">
+              <div>
+                <h3>Journal prompt of the day</h3>
+                <p id="journalPromptText">What helped you feel steady today?</p>
+              </div>
+              <button id="journalPromptRefreshBtn" type="button" class="secondary">New prompt</button>
+            </div>
+            <div class="challenge-actions">
+              <button id="journalPromptUseBtn" type="button">Use in journal</button>
+              <span id="journalPromptStatus" class="challenge-status">Ready when you are.</span>
+            </div>
+          </div>
+          <form id="journalForm" class="journal-composer">
+            <div class="journal-compose-grid">
+              <input id="journalTitle" aria-label="Journal entry title" placeholder="Entry title" />
+              <label>Mood
+                <select id="journalMood">
+                  <option value="steady">Steady</option>
+                  <option value="hopeful">Hopeful</option>
+                  <option value="grateful">Grateful</option>
+                  <option value="anxious">Anxious</option>
+                  <option value="tired">Tired</option>
+                  <option value="overwhelmed">Overwhelmed</option>
+                </select>
+              </label>
+              <label>Entry visibility
+                <select id="journalEntryVisibility">
+                  <option value="private">Only me</option>
+                  <option value="followers">My followers</option>
+                  <option value="everyone">Everyone</option>
+                </select>
+              </label>
+            </div>
+            <textarea id="journalBody" aria-label="Journal reflection body" placeholder="Write your reflection..."></textarea>
+            <div class="journal-compose-actions">
+              <button id="journalSubmitBtn" type="submit">Save entry</button>
+              <button id="journalExportBtn" type="button" class="secondary">Export all entries</button>
+              <button id="journalDraftSaveBtn" type="button" class="secondary">Save draft</button>
+              <button id="journalDraftClearBtn" type="button" class="secondary">Clear draft</button>
+              <button id="journalEditCancelBtn" type="button" class="secondary is-hidden">Cancel edit</button>
+            </div>
+          </form>
+          <div id="journalDraftState" class="state-empty">Drafts save on this device for your current session.</div>
+          <div class="journal-recent-block">
+            <h3>Recent reflections</h3>
+            <div id="journalRecentList" class="journal-recent-list">Your latest entries will appear here.</div>
+          </div>
           <ul id="entriesList"></ul>
         </section>
 
-        <section class="card">
+        <section class="card area-privacy">
           <h2>Privacy Settings</h2>
+          <div id="privacySaveState" class="state-empty">Adjust visibility settings and save when ready.</div>
           <form id="privacyForm">
             <label>Profile visibility
               <select id="profileVisibility">
                 <option value="private">Only me</option>
-                <option value="groups">My groups</option>
-                <option value="community">Community</option>
+                <option value="followers">My followers</option>
+                <option value="everyone">Everyone</option>
               </select>
             </label>
             <label>Journal visibility
               <select id="journalVisibility">
                 <option value="private">Only me</option>
-                <option value="groups">My groups</option>
-                <option value="community">Community</option>
+                <option value="followers">My followers</option>
+                <option value="everyone">Everyone</option>
               </select>
             </label>
+            <label>Story sharing
+              <select id="storySharing">
+                <option value="private">Only me</option>
+                <option value="followers">My followers</option>
+                <option value="everyone">Everyone</option>
+              </select>
+            </label>
+            <p class="helper-copy">Profile, journal, and story defaults start private unless you choose otherwise.</p>
             <button type="submit">Save privacy</button>
           </form>
         </section>
 
-        <section class="card">
-          <h2>Communities</h2>
-          <div class="event-list" id="communityList"></div>
+        <section class="card area-notifications">
+          <h2>Notification Preferences</h2>
+          <div id="notificationState" class="state-empty">Choose how and when Rekindle & Rise contacts you.</div>
+          <form id="notificationForm">
+            <div class="notification-grid">
+              <label class="toggle-row"><input type="checkbox" id="notifyEmail" /> Email updates</label>
+              <label class="toggle-row"><input type="checkbox" id="notifyInApp" /> In-app reminders</label>
+              <label class="toggle-row"><input type="checkbox" id="notifySms" /> SMS updates</label>
+              <label class="toggle-row"><input type="checkbox" id="notifyWeeklyDigest" /> Weekly digest</label>
+              <label class="toggle-row"><input type="checkbox" id="notifyEventUpdates" /> Event updates</label>
+              <label class="toggle-row"><input type="checkbox" id="notifyCommunityUpdates" /> Community updates</label>
+            </div>
+            <p class="helper-copy">You can opt into one or multiple channels. At least one preference will remain active.</p>
+            <button type="submit">Save notifications</button>
+          </form>
         </section>
 
-        <section class="card">
+        <section class="card area-communities">
+          <h2>Communities</h2>
+          <div id="communityState" class="state-loading">Loading communities...</div>
+          <div class="community-discovery-tools">
+            <input id="communitySearch" aria-label="Search communities" placeholder="Search communities, topics, or support themes" />
+            <select id="communityTopicFilter">
+              <option value="">All topics</option>
+            </select>
+            <select id="communityFormatFilter">
+              <option value="">All formats</option>
+              <option value="online">Online</option>
+              <option value="in-person">In-person</option>
+              <option value="hybrid">Hybrid</option>
+            </select>
+            <input id="communityLocationFilter" aria-label="Filter communities by location" placeholder="Location (e.g. Austin or Virtual)" />
+            <label class="toggle-row"><input id="communityModeratedOnly" type="checkbox" /> Moderated only</label>
+            <label class="toggle-row"><input id="communityVerifiedOnly" type="checkbox" /> Verified only</label>
+          </div>
+          <form id="communityCreateForm" class="community-create-form">
+            <h3>Create your community</h3>
+            <input id="communityCreateName" aria-label="Community name" placeholder="Community name" required />
+            <input id="communityCreateLocation" aria-label="Community location" placeholder="Location" />
+            <select id="communityCreateFormat" aria-label="Community format">
+              <option value="online">Online</option>
+              <option value="in-person">In-person</option>
+              <option value="hybrid">Hybrid</option>
+            </select>
+            <input id="communityCreateTopics" aria-label="Community topics" placeholder="Topics (comma separated)" />
+            <textarea id="communityCreateDescription" aria-label="Community description" placeholder="Short description"></textarea>
+            <div class="action-row">
+              <button type="submit">Create community</button>
+            </div>
+          </form>
+          <div class="community-layout">
+            <div class="event-list" id="communityList"></div>
+            <div class="community-detail" id="communityDetail">
+              <div id="communityDetailState" class="state-empty">Select a community to view details.</div>
+              <div id="communityDetailBody"></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="card area-events">
           <h2>Events</h2>
-          <div class="event-list" id="eventList"></div>
+          <div id="eventState" class="state-loading">Loading upcoming events...</div>
+          <div class="event-discovery-tools">
+            <input id="eventSearch" aria-label="Search events" placeholder="Search by title, location, or topic" />
+            <select id="eventTopicFilter">
+              <option value="">All topics</option>
+            </select>
+            <select id="eventFormatFilter">
+              <option value="">All formats</option>
+              <option value="online">Online</option>
+              <option value="in-person">In-person</option>
+              <option value="hybrid">Hybrid</option>
+            </select>
+            <input id="eventLocationFilter" aria-label="Filter events by location" placeholder="Location (e.g. Austin or Virtual)" />
+            <input id="eventFromFilter" aria-label="Filter events from date" type="date" />
+            <input id="eventToFilter" aria-label="Filter events to date" type="date" />
+          </div>
+          <div class="view-toggle" role="tablist" aria-label="Event views">
+            <button type="button" class="view-toggle-btn active" data-event-view="list">List</button>
+            <button type="button" class="view-toggle-btn" data-event-view="calendar">Calendar</button>
+            <button type="button" class="view-toggle-btn" data-event-view="map">Map</button>
+          </div>
+          <div class="event-meta" id="eventMeta">Switch views to explore the schedule in different ways.</div>
+          <div class="event-layout">
+            <div>
+              <div class="event-view" id="eventCalendar" hidden></div>
+              <div class="event-view" id="eventMap" hidden></div>
+              <div class="event-list" id="eventList"></div>
+            </div>
+            <div class="event-detail" id="eventDetail">
+              <div id="eventDetailState" class="state-empty">Select an event to view details and RSVP.</div>
+              <div id="eventDetailBody"></div>
+            </div>
+          </div>
         </section>
       </main>
     </div>

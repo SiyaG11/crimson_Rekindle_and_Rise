@@ -1,0 +1,69 @@
+{
+  "users": [],
+  "journalEntries": [],
+  "communities": [
+    {
+      "id": "c1",
+      "name": "Returning to School",
+      "description": "Support for transitions and confidence.",
+      "moderated": true,
+      "verified": true,
+      "format": "hybrid",
+      "topics": ["education", "confidence", "peer-support"],
+      "location": "Virtual + Local Chapters",
+      "members": []
+    },
+    {
+      "id": "c2",
+      "name": "Caregiver Support",
+      "description": "Resources for family and supporters.",
+      "moderated": true,
+      "verified": true,
+      "format": "online",
+      "topics": ["caregiving", "resources", "family"],
+      "location": "Virtual",
+      "members": []
+    }
+  ],
+  "events": [
+    {
+      "id": "e1",
+      "title": "Community Circle",
+      "date": "2026-08-08",
+      "location": "Virtual",
+      "format": "online",
+      "topic": "peer-support",
+      "host": "Rekindle Peer Team",
+      "accessibility": "Live captions enabled",
+      "safetyNote": "Moderated conversation with clear participation rules.",
+      "verified": true,
+      "rsvps": []
+    },
+    {
+      "id": "e2",
+      "title": "Resource Workshop",
+      "date": "2026-08-12",
+      "location": "Austin, TX",
+      "format": "in-person",
+      "topic": "resources",
+      "host": "Care Network Collective",
+      "accessibility": "Wheelchair accessible venue",
+      "safetyNote": "Facilitator and support volunteers present onsite.",
+      "verified": true,
+      "rsvps": []
+    },
+    {
+      "id": "e3",
+      "title": "Family Care Q&A",
+      "date": "2026-08-17",
+      "location": "Virtual",
+      "format": "online",
+      "topic": "caregiving",
+      "host": "Family Support Collective",
+      "accessibility": "Captioned recording shared after event",
+      "safetyNote": "Questions screened for respectful discussion.",
+      "verified": true,
+      "rsvps": []
+    }
+  ]
+}

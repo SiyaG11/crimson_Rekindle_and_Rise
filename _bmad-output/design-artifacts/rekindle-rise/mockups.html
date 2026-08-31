@@ -3,183 +3,503 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Rekindle & Rise — Premium UX Mockups</title>
+    <title>Rekindle & Rise - UX Mockups</title>
     <style>
       :root {
-        --bg: #f5efe8;
-        --surface: #fcfaf7;
-        --surface-2: #f2e7da;
-        --ink: #2d2724;
-        --muted: #6e625a;
-        --accent: #a65f49;
-        --accent-2: #6f7f57;
-        --border: #e2d5c8;
-        --shadow: 0 16px 40px rgba(49, 34, 25, 0.08);
+        --bg-0: #fdf7f2;
+        --bg-1: #f2e7dc;
+        --surface: rgba(255, 252, 248, 0.84);
+        --surface-solid: #fffaf4;
+        --line: #e4d4c4;
+        --ink-1: #261f1a;
+        --ink-2: #5f534a;
+        --brand: #a3553f;
+        --sage: #4f6748;
+        --sky: #7ea4b7;
+        --radius-xl: 26px;
+        --radius-lg: 18px;
+        --radius-sm: 12px;
+        --shadow-lg: 0 26px 70px rgba(56, 31, 18, 0.14);
+        --shadow-md: 0 14px 34px rgba(56, 31, 18, 0.1);
       }
-      * { box-sizing: border-box; }
-      body { margin: 0; font-family: Inter, "Segoe UI", sans-serif; background: linear-gradient(180deg, #f9f3eb 0%, var(--bg) 100%); color: var(--ink); }
-      .page { max-width: 1320px; margin: 0 auto; padding: 32px 20px 80px; }
-      .hero { background: var(--surface); border: 1px solid var(--border); border-radius: 24px; padding: 28px; box-shadow: var(--shadow); margin-bottom: 24px; }
-      .hero h1 { margin: 0 0 8px; font-size: 30px; }
-      .hero p { margin: 0; color: var(--muted); max-width: 760px; line-height: 1.6; }
-      .grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; }
-      .card { background: var(--surface); border: 1px solid var(--border); border-radius: 22px; padding: 20px; box-shadow: var(--shadow); }
-      .card h2 { margin: 0 0 14px; font-size: 18px; }
-      .pill { display: inline-block; padding: 5px 10px; border-radius: 999px; background: var(--surface-2); color: var(--accent); font-size: 12px; font-weight: 700; margin-bottom: 10px; }
-      .mock { border: 1px solid var(--border); border-radius: 16px; padding: 16px; background: linear-gradient(180deg, #fffdfa 0%, #f7efe7 100%); }
-      .row { display: flex; justify-content: space-between; align-items: center; gap: 10px; margin: 8px 0; }
-      .btn { padding: 9px 12px; border-radius: 999px; border: none; font-weight: 700; cursor: pointer; }
-      .btn.primary { background: var(--accent); color: white; }
-      .btn.secondary { background: #efe0d2; color: var(--ink); }
-      .chip { display: inline-block; padding: 6px 10px; border-radius: 999px; background: #ebf2e6; color: var(--accent-2); margin: 4px 6px 4px 0; font-size: 12px; font-weight: 600; }
-      .muted { color: var(--muted); font-size: 13px; line-height: 1.5; }
-      .stack { display: grid; gap: 10px; }
-      .panel { border: 1px solid var(--border); background: #fff; border-radius: 12px; padding: 12px; }
-      .stat-row { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin: 12px 0; }
-      .stat { background: #f8efe7; border-radius: 12px; padding: 10px; }
-      .calendar { display: grid; grid-template-columns: repeat(7, 1fr); gap: 6px; margin-top: 10px; }
-      .day { padding: 8px; text-align: center; border-radius: 10px; background: #f7efe7; color: var(--muted); font-size: 12px; }
-      .day.active { background: var(--accent); color: white; }
-      .map { height: 120px; border-radius: 12px; background: linear-gradient(135deg, #e4efe0 0%, #d8e8eb 100%); border: 1px dashed #b8c9b4; position: relative; overflow: hidden; margin-top: 10px; }
-      .map::before { content: ""; position: absolute; inset: 0; background-image: radial-gradient(circle, rgba(0,0,0,0.12) 1px, transparent 1px); background-size: 22px 22px; opacity: 0.3; }
-      .map .pin { position: absolute; width: 12px; height: 12px; background: var(--accent); border-radius: 999px; box-shadow: 0 0 0 6px rgba(166,95,73,0.18); }
-      .map .pin.one { top: 32px; left: 28px; }
-      .map .pin.two { top: 54px; right: 34px; }
-      .map .pin.three { bottom: 22px; left: 46px; }
-      @media (max-width: 900px) { .grid { grid-template-columns: 1fr; } }
+
+      * {
+        box-sizing: border-box;
+      }
+
+      body {
+        margin: 0;
+        color: var(--ink-1);
+        font-family: "Avenir Next", "Trebuchet MS", "Gill Sans", sans-serif;
+        background:
+          radial-gradient(circle at 10% 8%, rgba(163, 85, 63, 0.2), transparent 28%),
+          radial-gradient(circle at 88% 4%, rgba(126, 164, 183, 0.24), transparent 30%),
+          radial-gradient(circle at 50% 100%, rgba(79, 103, 72, 0.14), transparent 38%),
+          linear-gradient(180deg, var(--bg-0) 0%, var(--bg-1) 100%);
+        min-height: 100vh;
+      }
+
+      .texture {
+        position: fixed;
+        inset: 0;
+        pointer-events: none;
+        opacity: 0.24;
+        background-image: radial-gradient(rgba(64, 42, 30, 0.2) 0.6px, transparent 0.6px);
+        background-size: 8px 8px;
+      }
+
+      .page {
+        max-width: 1280px;
+        margin: 0 auto;
+        padding: 34px 20px 70px;
+        position: relative;
+        z-index: 1;
+      }
+
+      .hero {
+        background: linear-gradient(145deg, rgba(255, 252, 248, 0.92), rgba(250, 240, 229, 0.78));
+        border: 1px solid rgba(221, 204, 189, 0.92);
+        backdrop-filter: blur(8px);
+        border-radius: var(--radius-xl);
+        padding: 28px;
+        box-shadow: var(--shadow-lg);
+        margin-bottom: 22px;
+        overflow: hidden;
+        position: relative;
+      }
+
+      .hero::after {
+        content: "";
+        position: absolute;
+        width: 250px;
+        height: 250px;
+        border-radius: 50%;
+        right: -120px;
+        top: -95px;
+        background: radial-gradient(circle, rgba(163, 85, 63, 0.2), transparent 70%);
+      }
+
+      h1,
+      h2,
+      h3,
+      strong {
+        font-family: "Iowan Old Style", "Palatino Linotype", "Book Antiqua", serif;
+        letter-spacing: -0.01em;
+      }
+
+      .eyebrow {
+        margin: 0 0 8px;
+        color: var(--brand);
+        font-weight: 700;
+        text-transform: uppercase;
+        letter-spacing: 0.08em;
+        font-size: 11px;
+      }
+
+      .hero h1 {
+        margin: 0;
+        font-size: clamp(29px, 4vw, 42px);
+      }
+
+      .hero p {
+        margin: 12px 0 0;
+        max-width: 840px;
+        color: var(--ink-2);
+        line-height: 1.65;
+      }
+
+      .hero-tags {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+        margin-top: 18px;
+      }
+
+      .hero-tags span {
+        border: 1px solid #ead9c9;
+        background: rgba(255, 255, 255, 0.66);
+        color: #6a4b3f;
+        border-radius: 999px;
+        font-size: 12px;
+        padding: 7px 11px;
+        font-weight: 700;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 18px;
+      }
+
+      .card {
+        background: var(--surface);
+        border: 1px solid rgba(228, 212, 196, 0.96);
+        border-radius: var(--radius-xl);
+        box-shadow: var(--shadow-md);
+        backdrop-filter: blur(12px);
+        padding: 18px;
+      }
+
+      .screen-id {
+        display: inline-flex;
+        align-items: center;
+        border-radius: 999px;
+        background: linear-gradient(135deg, #f0dfd0, #f9efe6);
+        border: 1px solid #e8d4c0;
+        color: #8c4d39;
+        font-size: 11px;
+        font-weight: 800;
+        padding: 6px 10px;
+        letter-spacing: 0.06em;
+        margin-bottom: 10px;
+      }
+
+      .card h2 {
+        margin: 0 0 12px;
+        font-size: 23px;
+      }
+
+      .mock {
+        border: 1px solid #e8d8c8;
+        border-radius: var(--radius-lg);
+        background: linear-gradient(180deg, #fffdf8 0%, #f7eee3 100%);
+        padding: 14px;
+      }
+
+      .row {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        gap: 10px;
+      }
+
+      .muted {
+        color: var(--ink-2);
+        font-size: 13px;
+        line-height: 1.52;
+      }
+
+      .panel {
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--line);
+        background: var(--surface-solid);
+        padding: 11px 12px;
+        margin-top: 10px;
+      }
+
+      .chips {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 7px;
+        margin-top: 10px;
+      }
+
+      .chip {
+        border-radius: 999px;
+        padding: 6px 10px;
+        font-size: 12px;
+        font-weight: 700;
+      }
+
+      .chip.soft {
+        background: #f5e7d8;
+        color: #815141;
+      }
+
+      .chip.safe {
+        background: #e8f0e3;
+        color: #4a6340;
+      }
+
+      .chip.calm {
+        background: #e9f2f6;
+        color: #4f6f7d;
+      }
+
+      .screen-footer {
+        border-top: 1px dashed #dbc6b1;
+        margin-top: 12px;
+        padding-top: 10px;
+      }
+
+      .btn-row {
+        display: flex;
+        justify-content: space-between;
+        gap: 8px;
+      }
+
+      .btn {
+        border: none;
+        border-radius: 999px;
+        padding: 9px 12px;
+        font-weight: 700;
+        font-size: 13px;
+      }
+
+      .btn.primary {
+        background: linear-gradient(135deg, #b0634d, #8f4835);
+        color: #fff;
+      }
+
+      .btn.secondary {
+        background: #eee0d2;
+        color: #423229;
+      }
+
+      .stat-row {
+        margin-top: 10px;
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 8px;
+      }
+
+      .stat {
+        border-radius: var(--radius-sm);
+        padding: 10px;
+        background: linear-gradient(180deg, #faf1e8, #f3e8dc);
+        border: 1px solid #e7d6c5;
+      }
+
+      .calendar {
+        margin-top: 8px;
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        gap: 5px;
+      }
+
+      .day {
+        border-radius: 9px;
+        text-align: center;
+        font-size: 11px;
+        padding: 7px 4px;
+        color: #6c5f56;
+        background: #f6ede4;
+      }
+
+      .day.head {
+        background: transparent;
+        font-weight: 700;
+        color: #8b7768;
+      }
+
+      .day.active {
+        background: linear-gradient(135deg, #b0634d, #8f4835);
+        color: #fff;
+      }
+
+      .map {
+        margin-top: 10px;
+        height: 110px;
+        border-radius: var(--radius-sm);
+        border: 1px dashed #b7c6ce;
+        background:
+          linear-gradient(120deg, rgba(195, 221, 233, 0.38), rgba(210, 235, 217, 0.34)),
+          radial-gradient(circle at 40% 20%, rgba(255, 255, 255, 0.66), transparent 40%);
+        position: relative;
+        overflow: hidden;
+      }
+
+      .map::before {
+        content: "";
+        position: absolute;
+        inset: 0;
+        opacity: 0.25;
+        background-image: radial-gradient(rgba(35, 46, 53, 0.7) 0.8px, transparent 0.8px);
+        background-size: 20px 20px;
+      }
+
+      .pin {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        background: #a3553f;
+        box-shadow: 0 0 0 7px rgba(163, 85, 63, 0.18);
+        position: absolute;
+      }
+
+      .pin.p1 { top: 24px; left: 30px; }
+      .pin.p2 { top: 52px; right: 34px; }
+      .pin.p3 { bottom: 18px; left: 46px; }
+
+      @media (max-width: 980px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+
+        .card h2 {
+          font-size: 21px;
+        }
+      }
     </style>
   </head>
   <body>
+    <div class="texture"></div>
     <div class="page">
-      <div class="hero">
-        <h1>Rekindle & Rise — Premium UX Mockups</h1>
-        <p>This refreshed set presents a more comprehensive, product-ready experience for onboarding, journaling, community engagement, and event discovery. The screens are designed to feel calm, credible, and polished for both mobile and desktop.</p>
-      </div>
+      <section class="hero">
+        <p class="eyebrow">Design Preview</p>
+        <h1>Rekindle & Rise - Professional UX Mockups</h1>
+        <p>
+          This concept pass pushes the interface toward a premium, emotionally safe product language:
+          stronger hierarchy, cleaner rhythm, visible trust cues, and richer screen composition
+          for both desktop and mobile review.
+        </p>
+        <div class="hero-tags">
+          <span>Trauma-informed tone</span>
+          <span>Privacy-first visual cues</span>
+          <span>Responsive shell</span>
+          <span>Calendar + map event discovery</span>
+        </div>
+      </section>
 
-      <div class="grid">
-        <div class="card">
-          <span class="pill">01 · Onboarding</span>
-          <h2>Welcome & Role Selection</h2>
+      <section class="grid">
+        <article class="card">
+          <span class="screen-id">01 · Onboarding</span>
+          <h2>Welcome + Role Selection</h2>
           <div class="mock">
-            <div class="row"><strong>Rekindle & Rise</strong><span class="muted">Trusted community</span></div>
-            <div class="stack">
-              <div class="panel">
-                <strong>Welcome back, Maya</strong>
-                <p class="muted">Choose the role that feels closest to your experience and begin with privacy-first defaults.</p>
+            <div class="row"><strong>Rekindle & Rise</strong><span class="muted">Trusted peer community</span></div>
+            <div class="panel">
+              <strong>Welcome, Maya</strong>
+              <p class="muted">Choose the role that matches your journey. Privacy remains private by default.</p>
+            </div>
+            <div class="chips">
+              <span class="chip soft">Survivor</span>
+              <span class="chip soft">Supporter</span>
+              <span class="chip soft">Organization</span>
+            </div>
+            <div class="panel">
+              <div class="row"><span>Age + consent verification</span><span class="muted">Complete</span></div>
+              <div class="row"><span>Privacy setup</span><span class="muted">Step 2</span></div>
+            </div>
+            <div class="screen-footer">
+              <div class="btn-row">
+                <button class="btn secondary">Back</button>
+                <button class="btn primary">Continue</button>
               </div>
-              <div class="row">
-                <div class="chip">Survivor</div><div class="chip">Supporter</div><div class="chip">Organization</div>
-              </div>
-              <div class="panel">
-                <div class="row"><span>Age & consent</span><span class="muted">Verified</span></div>
-                <div class="row"><span>Privacy setup</span><span class="muted">Private by default</span></div>
-              </div>
-              <button class="btn primary">Continue</button>
             </div>
           </div>
-        </div>
+        </article>
 
-        <div class="card">
-          <span class="pill">02 · Dashboard</span>
-          <h2>Personal Home Experience</h2>
+        <article class="card">
+          <span class="screen-id">02 · Home Dashboard</span>
+          <h2>Calm, Useful Daily Home</h2>
           <div class="mock">
-            <div class="row"><strong>Home</strong><span class="muted">Notifications · Search</span></div>
+            <div class="row"><strong>Home</strong><span class="muted">Search · Alerts</span></div>
             <div class="stat-row">
-              <div class="stat"><strong>3</strong><br/><span class="muted">Events</span></div>
-              <div class="stat"><strong>2</strong><br/><span class="muted">Groups</span></div>
-              <div class="stat"><strong>6</strong><br/><span class="muted">Entries</span></div>
+              <div class="stat"><strong>3</strong><br /><span class="muted">Events</span></div>
+              <div class="stat"><strong>2</strong><br /><span class="muted">Groups</span></div>
+              <div class="stat"><strong>6</strong><br /><span class="muted">Entries</span></div>
             </div>
             <div class="panel">
-              <strong>Today’s prompt</strong>
-              <p class="muted">What felt grounding today, and what do you want to remember?</p>
+              <strong>Today’s reflection prompt</strong>
+              <p class="muted">What gave you a sense of steadiness today?</p>
             </div>
-            <div class="panel">
-              <div class="row"><span>Upcoming events</span><span class="muted">See all</span></div>
-              <div class="chip">Community circle</div><div class="chip">Resource workshop</div>
+            <div class="chips">
+              <span class="chip safe">Private journal active</span>
+              <span class="chip calm">Verified events nearby</span>
+              <span class="chip soft">Moderated groups</span>
             </div>
           </div>
-        </div>
+        </article>
 
-        <div class="card">
-          <span class="pill">03 · Community</span>
-          <h2>Group Discovery & Moderation</h2>
+        <article class="card">
+          <span class="screen-id">03 · Communities</span>
+          <h2>Group Discovery + Safety Signals</h2>
           <div class="mock">
-            <div class="row"><strong>Find your people</strong><span class="muted">Filter</span></div>
+            <div class="row"><strong>Find your community</strong><span class="muted">Filter</span></div>
             <div class="panel">
-              <div class="row"><span>Returning to School</span><span class="muted">Moderated</span></div>
-              <p class="muted">A supportive space for school and workplace transitions.</p>
+              <div class="row"><strong>Returning to School</strong><span class="muted">Moderated</span></div>
+              <p class="muted">Support for transitions into school and work routines.</p>
             </div>
             <div class="panel">
-              <div class="row"><span>Caregiver Support</span><span class="muted">Verified</span></div>
-              <p class="muted">A calm place for families and supporters to share resources.</p>
+              <div class="row"><strong>Caregiver Support</strong><span class="muted">Verified</span></div>
+              <p class="muted">Resources and discussion space for caregivers and families.</p>
             </div>
-            <div class="panel">
-              <div class="row"><span>Safety tools</span><span class="muted">Visible</span></div>
-              <p class="muted">Report, mute, or block options remain easy to access.</p>
+            <div class="chips">
+              <span class="chip calm">Search</span>
+              <span class="chip calm">Location tags</span>
+              <span class="chip safe">Report / mute tools visible</span>
             </div>
           </div>
-        </div>
+        </article>
 
-        <div class="card">
-          <span class="pill">04 · Journal</span>
+        <article class="card">
+          <span class="screen-id">04 · Journal</span>
           <h2>Private Reflection Workspace</h2>
           <div class="mock">
-            <div class="row"><strong>Journal</strong><span class="muted">Private</span></div>
+            <div class="row"><strong>Journal</strong><span class="muted">Only me</span></div>
             <div class="panel">
               <strong>Prompt of the day</strong>
-              <p class="muted">What support do I need right now?</p>
+              <p class="muted">What support do I need this week, and from whom?</p>
             </div>
-            <div class="panel" style="min-height: 92px;">
-              <p class="muted">Write freely, use voice-to-text, or attach a photo. Your entries stay private unless you choose otherwise.</p>
+            <div class="panel" style="min-height: 86px;">
+              <p class="muted">Free-write, voice-to-text, or attach a photo. Save as draft or publish to your private timeline.</p>
             </div>
-            <div class="row">
+            <div class="btn-row" style="margin-top: 10px;">
               <button class="btn secondary">Save draft</button>
               <button class="btn primary">Add entry</button>
             </div>
+            <div class="chips">
+              <span class="chip safe">Private by default</span>
+              <span class="chip soft">Export available</span>
+              <span class="chip calm">History + edit states</span>
+            </div>
           </div>
-        </div>
+        </article>
 
-        <div class="card">
-          <span class="pill">05 · Events</span>
-          <h2>Event Discovery with Calendar & Map</h2>
+        <article class="card">
+          <span class="screen-id">05 · Events</span>
+          <h2>Calendar, Map, and List Discovery</h2>
           <div class="mock">
             <div class="row"><strong>Events near you</strong><span class="muted">Today · Nearby</span></div>
             <div class="panel">
               <div class="row"><span>August 2026</span><span class="muted">Calendar view</span></div>
               <div class="calendar">
-                <div class="day">Mo</div><div class="day">Tu</div><div class="day">We</div><div class="day">Th</div><div class="day">Fr</div><div class="day">Sa</div><div class="day">Su</div>
+                <div class="day head">Mo</div><div class="day head">Tu</div><div class="day head">We</div><div class="day head">Th</div><div class="day head">Fr</div><div class="day head">Sa</div><div class="day head">Su</div>
                 <div class="day">3</div><div class="day">4</div><div class="day">5</div><div class="day active">6</div><div class="day">7</div><div class="day">8</div><div class="day">9</div>
               </div>
             </div>
             <div class="panel">
               <strong>Community Circle</strong>
-              <p class="muted">Sat · 6:00 PM · Virtual · Verified organization</p>
+              <p class="muted">Sat 6:00 PM · Virtual · Verified organizer · Accessibility notes available</p>
               <div class="map">
-                <div class="pin one"></div>
-                <div class="pin two"></div>
-                <div class="pin three"></div>
+                <div class="pin p1"></div>
+                <div class="pin p2"></div>
+                <div class="pin p3"></div>
               </div>
             </div>
-            <div class="row"><button class="btn secondary">View details</button><button class="btn primary">RSVP</button></div>
+            <div class="btn-row" style="margin-top: 10px;">
+              <button class="btn secondary">View details</button>
+              <button class="btn primary">RSVP</button>
+            </div>
           </div>
-        </div>
+        </article>
 
-        <div class="card">
-          <span class="pill">06 · Profile</span>
-          <h2>Profile & Privacy Controls</h2>
+        <article class="card">
+          <span class="screen-id">06 · Profile + Settings</span>
+          <h2>Controlled Visibility and Preferences</h2>
           <div class="mock">
             <div class="row"><strong>Maya R.</strong><span class="muted">Survivor</span></div>
             <div class="panel">
-              <strong>Visible to</strong>
-              <div class="chip">Only me</div><div class="chip">My groups</div><div class="chip">Everyone</div>
+              <strong>Visibility controls</strong>
+              <div class="chips">
+                <span class="chip soft">Only me</span>
+                <span class="chip soft">My groups</span>
+                <span class="chip soft">Community</span>
+              </div>
             </div>
             <div class="panel">
-              <div class="row"><span>Notifications</span><span class="muted">On</span></div>
+              <div class="row"><span>Notifications</span><span class="muted">Enabled</span></div>
               <div class="row"><span>Journal export</span><span class="muted">Available</span></div>
+              <div class="row"><span>Security checkup</span><span class="muted">Up to date</span></div>
+            </div>
+            <div class="chips">
+              <span class="chip safe">Privacy</span>
+              <span class="chip calm">Notifications</span>
+              <span class="chip soft">Security</span>
             </div>
           </div>
-        </div>
-      </div>
+        </article>
+      </section>
     </div>
   </body>
 </html>
