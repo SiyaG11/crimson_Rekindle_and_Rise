@@ -5,12 +5,22 @@ Privacy-first community platform for burn survivors and supporters.
 ## Local Development
 
 1. Use Node.js 20 (see [.nvmrc](.nvmrc)).
-2. Copy [.env.example](.env.example) to `.env` if you need local overrides.
-3. Run the API app:
+2. Start a local PostgreSQL instance that matches `DATABASE_URL` in [.env.example](.env.example), or start the `postgres` service with Docker Compose.
+3. Copy [.env.example](.env.example) to `.env`. `npm run dev` loads this file and requires a reachable database so account data is durable.
+4. Apply the database migration and role seed:
+
+```bash
+npm run db:migrate
+npm run db:seed
+```
+
+5. Run the API app:
 
 ```bash
 npm run dev
 ```
+
+`npm run dev` exits if `.env` is missing or PostgreSQL cannot be reached; it does not silently use volatile account storage. The Docker Compose workflow continues to provide its own `DATABASE_URL` to the same command.
 
 ## Environment and Seeding
 
@@ -40,13 +50,15 @@ A local development container stack is provided for API + Postgres + Redis + Min
 docker compose -f docker-compose.dev.yml up --build
 ```
 
+The development API container automatically applies the database migrations and role seed before it starts.
+
 ## Database Foundation
 
 Initial database artifacts now live under `db/`:
 - `db/migrations/001_initial_schema.sql`
 - `db/seeds/001_seed_roles.sql`
 
-To apply them against your configured Postgres instance:
+To apply them against your configured Postgres instance before starting the API:
 
 ```bash
 # Requires DATABASE_URL and psql in PATH
@@ -54,7 +66,7 @@ npm run db:migrate
 npm run db:seed
 ```
 
-The API uses a persistence abstraction layer in `apps/api/persistence/store.js` so route handlers no longer mutate raw state arrays directly.
+The API loads its durable application state from PostgreSQL at startup and writes every account, session, profile, journal, social, community, event, and moderation change back before responding. The persistence adapter lives in `apps/api/persistence/store.js`; the process keeps an in-memory cache only to retain the existing synchronous route contract. Passwords are stored as scrypt hashes, never as their submitted plaintext values.
 
 ## Quality Commands
 

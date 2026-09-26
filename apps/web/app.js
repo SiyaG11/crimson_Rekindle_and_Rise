@@ -59,7 +59,101 @@ function setState(elementId, variant, message) {
   target.textContent = message;
 }
 
-let authMode = 'register';
+const APP_TABS = ['home', 'journal', 'community', 'events', 'profile', 'settings'];
+const APP_TAB_STORAGE_KEY = 'rekindle-active-tab';
+let activeAppTab = 'home';
+
+function setHomeView(viewName) {
+  const onboarding = document.querySelector('.area-onboarding');
+  const dashboard = document.querySelector('.area-dashboard');
+  const showDashboard = viewName === 'dashboard';
+
+  if (onboarding) onboarding.hidden = showDashboard;
+  if (dashboard) dashboard.hidden = !showDashboard;
+}
+
+function setAppAccess(isAvailable) {
+  const tabs = document.querySelector('.bottom-tabs');
+  if (tabs) tabs.hidden = !isAvailable;
+
+  document.querySelectorAll('main > section:not(.area-onboarding)').forEach(panel => {
+    panel.hidden = !isAvailable;
+  });
+}
+
+async function initializeAppNavigation() {
+  const accessToken = localStorage.getItem('token');
+  const isAuthPage = document.body.dataset.page === 'auth';
+
+  if (accessToken) {
+    const result = await apiWithAuth('/api/v1/me');
+    if (result.response.ok && result.payload.user) {
+      setAppAccess(true);
+      if (isAuthPage) {
+        window.location.replace('/dashboard.html');
+        return;
+      }
+      updateAuthButtons();
+      return;
+    }
+  }
+
+  if (!isAuthPage) {
+    window.location.replace('/auth.html');
+    return;
+  }
+
+  setAppAccess(false);
+  setHomeView('onboarding');
+  setAuthMode('login');
+}
+
+function setActiveAppTab(tabName, options = {}) {
+  const { save = true } = options;
+  const normalized = APP_TABS.includes(tabName) ? tabName : 'home';
+  activeAppTab = normalized;
+
+  document.querySelectorAll('[data-app-tab-panel]').forEach(panel => {
+    const panelTab = panel.getAttribute('data-app-tab-panel');
+    const isActive = panelTab === normalized;
+    panel.hidden = !isActive;
+    panel.setAttribute('aria-hidden', isActive ? 'false' : 'true');
+  });
+
+  document.querySelectorAll('[data-app-tab]').forEach(tabButton => {
+    const isActive = tabButton.getAttribute('data-app-tab') === normalized;
+    tabButton.classList.toggle('is-active', isActive);
+    tabButton.setAttribute('aria-selected', isActive ? 'true' : 'false');
+  });
+
+  if (save) {
+    localStorage.setItem(APP_TAB_STORAGE_KEY, normalized);
+  }
+}
+
+function showTabForElementId(elementId) {
+  const target = document.getElementById(elementId);
+  const panel = target?.closest('[data-app-tab-panel]');
+  if (!panel) return;
+  const tabName = panel.getAttribute('data-app-tab-panel');
+  setActiveAppTab(tabName);
+}
+
+function bindBottomTabs() {
+  const buttons = document.querySelectorAll('[data-app-tab]');
+  if (!buttons.length) return;
+
+  buttons.forEach(button => {
+    button.addEventListener('click', () => {
+      setActiveAppTab(button.getAttribute('data-app-tab') || 'home');
+    });
+  });
+
+  const savedTab = localStorage.getItem(APP_TAB_STORAGE_KEY);
+  setActiveAppTab(savedTab || 'home', { save: false });
+}
+
+let authMode = 'login';
 let eventCatalog = [];
 let eventViewMode = 'list';
 let selectedEventId = null;
@@ -539,8 +633,10 @@ function setAuthMode(mode) {
 
   const displayNameField = document.getElementById('displayName');
   const roleField = document.getElementById('roleSelect');
+  const consentField = document.getElementById('consentAccepted');
   if (displayNameField) displayNameField.required = mode === 'register';
   if (roleField) roleField.required = mode === 'register';
+  if (consentField) consentField.required = mode === 'register';
 
   updateAuthButtons();
 }
@@ -559,6 +655,7 @@ function bindDashboardActions() {
   document.querySelectorAll('[data-scroll-target]').forEach(button => {
     button.addEventListener('click', () => {
       const targetId = button.getAttribute('data-scroll-target');
+      if (targetId) showTabForElementId(targetId);
       document.getElementById(targetId)?.scrollIntoView({ behavior: 'smooth', block: 'start' });
     });
   });
@@ -1524,6 +1621,7 @@ function bindHeroActions() {
   if (signupButton) {
     signupButton.addEventListener('click', () => {
       setAuthMode('register');
+      setActiveAppTab('home');
       const form = document.getElementById('signupForm');
       const firstField = document.getElementById('displayName');
       form?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1538,6 +1636,7 @@ function bindHeroActions() {
         return;
       }
       setAuthMode(authMode === 'login' ? 'register' : 'login');
+      setActiveAppTab('home');
       const form = document.getElementById('signupForm');
       const emailField = document.getElementById('email');
       form?.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -1806,6 +1905,7 @@ async function editEntry(entryId) {
   if (submitButton) submitButton.textContent = 'Update entry';
   cancelButton?.classList.remove('is-hidden');
   setState('journalState', 'success', 'Editing mode enabled. Update fields and save.');
+  setActiveAppTab('journal');
   document.getElementById('journalForm')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
 }
 
@@ -2036,9 +2136,14 @@ async function submitAuthForm(event) {
     loadNotificationPreferences();
     loadCommunities();
     updateJournalChallenge();
-    if (isRegisterMode) {
-      document.querySelector('.area-dashboard')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
+    if (document.body.dataset.page === 'auth') {
+      window.location.replace('/dashboard.html');
+      return;
     }
+    setAppAccess(true);
+    setHomeView('dashboard');
+    setActiveAppTab('home');
+    document.querySelector('.area-dashboard')?.scrollIntoView({ behavior: 'smooth', block: 'start' });
   }
 }
 
@@ -2047,6 +2152,8 @@ async function logoutUser() {
   const refreshToken = localStorage.getItem('refreshToken');
   if (!accessToken && !refreshToken) {
     setAuthMode('login');
+    setAppAccess(false);
+    setHomeView('onboarding');
     return;
   }
 
@@ -2058,9 +2165,15 @@ async function logoutUser() {
 
   localStorage.removeItem('token');
   localStorage.removeItem('refreshToken');
+  if (document.body.dataset.page !== 'auth') {
+    window.location.replace('/auth.html');
+    return;
+  }
   resetJournalComposer();
   loadJournalDraftFromStorage();
   setAuthMode('login');
+  setAppAccess(false);
+  setHomeView('onboarding');
   setState('signupState', 'success', 'You are signed out. Sign in again to continue.');
   loadDashboardSummary();
   loadProfileSummary();
@@ -2270,6 +2383,7 @@ if (profileForm) profileForm.addEventListener('submit', saveProfile);
 if (notificationForm) notificationForm.addEventListener('submit', saveNotificationPreferences);
 
 bindHeroActions();
+bindBottomTabs();
 bindDashboardActions();
 bindEventActions();
 bindSocialActions();
@@ -2277,7 +2391,13 @@ bindJournalDraftActions();
 bindCommunityActions();
 document.getElementById('profilePhotoUpload')?.addEventListener('change', handleProfilePhotoChange);
 document.getElementById('profilePhotoRemoveBtn')?.addEventListener('click', removeProfilePhoto);
-setAuthMode('register');
+if (document.body.dataset.page === 'auth') {
+  setAuthMode('login');
+  setAppAccess(false);
+  setHomeView('onboarding');
+} else {
+  setAppAccess(true);
+}
 setEventView('list');
 updateDailyChallenge();
 updateJournalPrompt();
@@ -2291,3 +2411,4 @@ loadNotificationPreferences();
 loadProfileSummary();
 loadSocialFeed();
 loadDashboardSummary();
+initializeAppNavigation();

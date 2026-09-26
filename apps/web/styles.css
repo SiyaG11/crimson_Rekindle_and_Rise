@@ -102,7 +102,40 @@ body {
   gap: 8px;
 }
 
+.hero-actions .app-link-btn {
+  text-decoration: none;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.button-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 999px;
+  padding: 10px 14px;
+  background: var(--accent);
+  color: #fff;
+  font-weight: 700;
+  text-decoration: none;
+}
+
+.auth-switch {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  margin-top: 18px;
+  color: var(--muted);
+}
+
+.auth-switch button {
+  padding: 7px 12px;
+}
+
 .hero-actions button,
+.hero-actions a,
 .card button,
 .card input,
 .card textarea,
@@ -114,6 +147,7 @@ select {
 }
 
 .hero-actions button,
+.hero-actions a,
 .card button {
   background: var(--accent);
   color: white;
@@ -159,6 +193,51 @@ a:focus-visible {
     "notifications"
     "communities"
     "events";
+}
+
+[data-app-tab-panel][hidden] {
+  display: none !important;
+}
+
+.bottom-tabs {
+  position: sticky;
+  top: 10px;
+  width: 100%;
+  margin-top: 16px;
+  margin-bottom: 14px;
+  background: rgba(249, 244, 238, 0.94);
+  border-bottom: 1px solid var(--line);
+  padding: 8px 0;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
+  gap: 8px;
+  z-index: 50;
+}
+
+.bottom-tab {
+  border: 1px solid transparent;
+  border-radius: 999px;
+  background: transparent;
+  color: var(--ink);
+  padding: 8px 12px;
+  font: inherit;
+  font-size: 0.95rem;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.bottom-tab:hover,
+.bottom-tab:focus-visible {
+  border-color: var(--line);
+  background: var(--card);
+}
+
+.bottom-tab.is-active {
+  border-color: rgba(168, 94, 68, 0.28);
+  background: rgba(168, 94, 68, 0.12);
+  color: var(--ink);
+  font-weight: 700;
 }
 
 .area-onboarding { grid-area: onboarding; }
@@ -1191,20 +1270,21 @@ label {
     grid-template-columns: repeat(12, minmax(0, 1fr));
     grid-template-areas:
       "onboarding onboarding onboarding onboarding dashboard dashboard dashboard dashboard dashboard dashboard dashboard dashboard"
+      "profile profile profile profile dashboard dashboard dashboard dashboard dashboard dashboard dashboard dashboard"
       "journal journal journal journal journal journal privacy privacy privacy privacy privacy privacy"
       "notifications notifications notifications notifications notifications notifications social social social social social social"
       "communities communities communities communities communities communities events events events events events events";
   }
 
-  .community-layout {
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-    align-items: start;
+  .auth-grid {
+    grid-template-areas: "onboarding onboarding onboarding onboarding onboarding onboarding onboarding onboarding onboarding onboarding onboarding onboarding";
   }
 
-  .event-layout {
-    grid-template-columns: minmax(0, 1.2fr) minmax(0, 1fr);
-    align-items: start;
+  .page-grid > .card {
+    grid-column: 1 / -1;
+    grid-row: auto;
   }
+
 }
 
 @media (min-width: 1200px) {
@@ -1212,8 +1292,18 @@ label {
   .grid {
     grid-template-areas:
       "onboarding onboarding onboarding onboarding dashboard dashboard dashboard dashboard privacy privacy privacy privacy"
+      "profile profile profile profile dashboard dashboard dashboard dashboard privacy privacy privacy privacy"
       "journal journal journal journal journal journal notifications notifications notifications social social social"
       "communities communities communities communities communities communities events events events events events events";
+  }
+
+  .auth-grid {
+    grid-template-areas: "onboarding onboarding onboarding onboarding onboarding onboarding onboarding onboarding onboarding onboarding onboarding onboarding";
+  }
+
+  .page-grid > .card {
+    grid-column: 1 / -1;
+    grid-row: auto;
   }
 }
 
@@ -1222,5 +1312,19 @@ label {
   .hero {
     flex-direction: column;
     align-items: flex-start;
+  }
+
+  .bottom-tabs {
+    top: 8px;
+    justify-content: flex-start;
+    overflow-x: auto;
+    scrollbar-width: thin;
+    padding: 8px 0;
+  }
+
+  .bottom-tab {
+    font-size: 0.82rem;
+    flex: 0 0 auto;
+    padding: 8px 10px;
   }
 }

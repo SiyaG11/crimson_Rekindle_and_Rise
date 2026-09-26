@@ -1,0 +1,17 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Welcome | Rekindle & Rise</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body data-page="auth">
+    <a class="skip-link" href="#mainContent">Skip to main content</a>
+    <div class="app-shell">
+      <header class="hero"><div class="brand-block"><img class="brand-logo" src="/logo.jpg" alt="Rekindle & Rise logo" /><div><p class="eyebrow">Private community platform</p><h1>Rekindle & Rise</h1><p class="subtitle">A calm, privacy-first space for healing, connection, and trusted support.</p></div></div><div class="hero-actions"><a href="/index.html" class="secondary app-link-btn">Public landing page</a></div></header>
+      <main id="mainContent" class="grid auth-grid"><section class="card area-onboarding"><p class="eyebrow">Your private beginning</p><h2>Onboarding</h2><div class="onboarding-hero"><p class="eyebrow">Step 1 of 3</p><h3>Start private, move gently, and choose what fits.</h3><p>Set up your account and privacy defaults before entering your dashboard.</p></div><div class="onboarding-progress" aria-label="Onboarding progress"><span class="step-pill step-pill-active">Welcome</span><span class="step-pill">Personalize</span><span class="step-pill">Enter dashboard</span></div><div id="signupState" class="state-empty">Sign in to continue to your private dashboard and journal.</div><form id="signupForm"><div id="displayNameRow" class="is-hidden"><input id="displayName" aria-label="Display name" placeholder="Display name" required minlength="2" /></div><input id="email" type="email" aria-label="Email" placeholder="Email" required /><input id="password" type="password" aria-label="Password" placeholder="Password" required minlength="8" /><div id="roleRow" class="is-hidden"><select id="roleSelect" aria-label="Role" required><option value="survivor">Survivor</option><option value="volunteer">Volunteer</option><option value="caregiver">Caregiver</option></select></div><div id="privacyDefaultsRow" class="onboarding-panel is-hidden"><label>Profile visibility<select id="onboardProfileVisibility"><option value="private">Only me</option><option value="followers">My followers</option><option value="everyone">Everyone</option></select></label><label>Journal visibility<select id="onboardJournalVisibility"><option value="private">Only me</option><option value="followers">My followers</option><option value="everyone">Everyone</option></select></label><label>Story sharing<select id="onboardStorySharing"><option value="private">Only me</option><option value="followers">My followers</option><option value="everyone">Everyone</option></select></label><p class="helper-copy">These are your first privacy defaults and can be changed later.</p></div><label id="consentRow" class="checkbox-row is-hidden"><input id="consentAccepted" type="checkbox" required /> I agree to respectful participation and understand that accounts begin private by default.</label><button id="authSubmitBtn" type="submit">Sign in</button></form><div class="auth-switch"><span>New to Rekindle &amp; Rise?</span> <button id="loginBtn" type="button" class="secondary">Create an account</button></div></section></main>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>

@@ -8,6 +8,7 @@ let baseUrl = '';
 test.before(async () => {
   server = createServer({
     port: 0,
+    databaseUrl: '',
     seedOnStart: true
   });
 
@@ -36,12 +37,19 @@ test('accessibility baseline includes skip link, main landmark, and aria labels 
   assert.ok(html.includes('class="skip-link"'));
   assert.ok(html.includes('id="mainContent"'));
 
-  assert.ok(html.includes('id="displayName" aria-label="Display name"'));
-  assert.ok(html.includes('id="email" type="email" aria-label="Email"'));
-  assert.ok(html.includes('id="password" type="password" aria-label="Password"'));
-  assert.ok(html.includes('id="journalBody" aria-label="Journal reflection body"'));
-  assert.ok(html.includes('id="communitySearch" aria-label="Search communities"'));
-  assert.ok(html.includes('id="eventSearch" aria-label="Search events"'));
+  assert.ok(html.includes('id="primaryNav"'));
+
+  const authHtml = await (await fetch(`${baseUrl}/auth.html`)).text();
+  assert.ok(authHtml.includes('id="displayName" aria-label="Display name"'));
+  assert.ok(authHtml.includes('id="email" type="email" aria-label="Email"'));
+  assert.ok(authHtml.includes('id="password" type="password" aria-label="Password"'));
+
+  const journalHtml = await (await fetch(`${baseUrl}/journal.html`)).text();
+  const communityHtml = await (await fetch(`${baseUrl}/community.html`)).text();
+  const eventsHtml = await (await fetch(`${baseUrl}/events.html`)).text();
+  assert.ok(journalHtml.includes('id="journalBody" aria-label="Journal reflection body"'));
+  assert.ok(communityHtml.includes('id="communitySearch" aria-label="Search communities"'));
+  assert.ok(eventsHtml.includes('id="eventSearch" aria-label="Search events"'));
 });
 
 test('frontend state announcements use live region attributes', async () => {

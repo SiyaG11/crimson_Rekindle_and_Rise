@@ -13,6 +13,7 @@ function uniqueEmail(prefix) {
 test.before(async () => {
   server = createServer({
     port: 0,
+    databaseUrl: '',
     seedOnStart: true
   });
 
@@ -33,16 +34,26 @@ test.after(async () => {
   });
 });
 
-test('ui contract serves onboarding and journal surfaces', async () => {
+test('ui contract serves landing, auth, and private application pages', async () => {
   const response = await fetch(`${baseUrl}/`);
   const html = await response.text();
   assert.equal(response.status, 200);
 
-  assert.ok(html.includes('id="signupForm"'));
-  assert.ok(html.includes('id="journalForm"'));
-  assert.ok(html.includes('id="eventSearch"'));
-  assert.ok(html.includes('id="communitySearch"'));
-  assert.ok(html.includes('id="notificationForm"'));
+  assert.ok(html.includes('id="primaryNav"'));
+  const authResponse = await fetch(`${baseUrl}/auth.html`);
+  assert.equal(authResponse.status, 200);
+  assert.ok((await authResponse.text()).includes('id="signupForm"'));
+
+  for (const [page, marker] of [
+    ['/journal.html', 'id="journalForm"'],
+    ['/events.html', 'id="eventSearch"'],
+    ['/community.html', 'id="communitySearch"'],
+    ['/settings.html', 'id="notificationForm"']
+  ]) {
+    const pageResponse = await fetch(`${baseUrl}${page}`);
+    assert.equal(pageResponse.status, 200);
+    assert.ok((await pageResponse.text()).includes(marker));
+  }
 });
 
 test('end-to-end onboarding flow persists defaults and allows profile retrieval', async () => {

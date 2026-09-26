@@ -442,10 +442,21 @@ function createServer(configOverrides = {}) {
     ...loadConfig(),
     ...configOverrides
   };
-  const store = createPersistenceStore(createInitialState(config));
+  const store = createPersistenceStore(createInitialState(config), {
+    databaseUrl: config.databaseUrl,
+    database: config.database
+  });
   const observability = createObservabilityState();
 
-function sendJson(res, statusCode, payload) {
+async function sendJson(res, statusCode, payload) {
+  try {
+    await store.flush();
+  } catch (error) {
+    console.error('[persistence] Request could not be saved:', error.message);
+    res.writeHead(503, { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type, Authorization' });
+    res.end(JSON.stringify({ error: 'Unable to save your changes. Please try again.' }));
+    return;
+  }
   res.writeHead(statusCode, { 'Content-Type': 'application/json; charset=utf-8', 'Access-Control-Allow-Origin': '*', 'Access-Control-Allow-Headers': 'Content-Type, Authorization' });
   res.end(JSON.stringify(payload));
 }
@@ -514,7 +525,7 @@ function serveStatic(req, res, pathname) {
   serveFile(res, filePath, contentType);
 }
 
-  return http.createServer(async (req, res) => {
+  const server = http.createServer(async (req, res) => {
     const url = new URL(req.url, `http://${req.headers.host}`);
     const requestStartedAt = process.hrtime.bigint();
 
@@ -913,7 +924,7 @@ function serveStatic(req, res, pathname) {
           sendJson(res, 409, { error: 'an account with this email already exists' });
           return;
         }
-        const user = store.createUser({
+        const account = store.registerUser({
           email: body.email,
           password: body.password,
           displayName: body.displayName,
@@ -925,7 +936,7 @@ function serveStatic(req, res, pathname) {
             completedAt: new Date().toISOString()
           }
         });
-        const session = store.issueSession(user.id);
+        const { user, session } = account;
         sendJson(res, 201, {
           user: serializeUser(user),
           token: session.accessToken,
@@ -1388,15 +1399,24 @@ function serveStatic(req, res, pathname) {
 
     sendJson(res, 404, { error: 'not found' });
   });
+  server.persistenceReady = store.hydrate();
+  return server;
 }
 
 if (require.main === module) {
   const config = loadConfig();
   const server = createServer(config);
-  server.listen(config.port, config.host, () => {
-    console.log(`Rekindle & Rise starter API listening on http://${config.host}:${config.port}`);
-    console.log(`Environment: ${config.nodeEnv} | Log level: ${config.logLevel} | Seed on start: ${config.seedOnStart}`);
-  });
+  server.persistenceReady
+    .then(() => {
+      server.listen(config.port, config.host, () => {
+        console.log(`Rekindle & Rise starter API listening on http://${config.host}:${config.port}`);
+        console.log(`Environment: ${config.nodeEnv} | Log level: ${config.logLevel} | Seed on start: ${config.seedOnStart}`);
+      });
+    })
+    .catch(error => {
+      console.error(`[persistence] Unable to initialize PostgreSQL: ${error.message}`);
+      process.exit(1);
+    });
 }
 
 module.exports = {

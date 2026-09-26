@@ -3,7 +3,7 @@
   "private": true,
   "version": "0.1.0",
   "scripts": {
-    "dev": "node apps/api/server.js",
+    "dev": "node --env-file=.env apps/api/server.js",
     "start": "node apps/api/server.js",
     "test": "node --test apps/api/tests/*.test.js",
     "test:watch": "node --test --watch apps/api/tests/*.test.js",
@@ -16,5 +16,8 @@
     "lint": "node --check apps/api/server.js && node --check apps/web/app.js",
     "format:check": "node scripts/check-format.js",
     "ci": "npm run lint && npm run format:check && npm test"
+  },
+  "dependencies": {
+    "pg": "^8.23.0"
   }
 }

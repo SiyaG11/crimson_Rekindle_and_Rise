@@ -1,6 +1,8 @@
 const test = require('node:test');
 const assert = require('node:assert/strict');
-const { createServer } = require('../server');
+const fs = require('fs');
+const path = require('path');
+const { createServer, loadConfig } = require('../server');
 
 let server;
 let baseUrl = '';
@@ -8,6 +10,7 @@ let baseUrl = '';
 test.before(async () => {
   server = createServer({
     port: 0,
+    databaseUrl: '',
     seedOnStart: true,
     requestLoggingEnabled: false,
     metricsEnabled: true
@@ -36,6 +39,20 @@ test('health endpoint responds ok', async () => {
   assert.equal(response.status, 200);
   assert.equal(payload.ok, true);
   assert.equal(payload.service, 'rekindle-rise-api');
+});
+
+test('host development command loads DATABASE_URL for persistent runtime', () => {
+  const previousDatabaseUrl = process.env.DATABASE_URL;
+  process.env.DATABASE_URL = 'postgres://rekindle:rekindle@localhost:5432/rekindle';
+
+  try {
+    assert.equal(loadConfig().databaseUrl, process.env.DATABASE_URL);
+    const packageJson = JSON.parse(fs.readFileSync(path.join(__dirname, '..', '..', '..', 'package.json'), 'utf8'));
+    assert.equal(packageJson.scripts.dev, 'node --env-file=.env apps/api/server.js');
+  } finally {
+    if (previousDatabaseUrl === undefined) delete process.env.DATABASE_URL;
+    else process.env.DATABASE_URL = previousDatabaseUrl;
+  }
 });
 
 test('infrastructure health endpoint returns dependency checks', async () => {
@@ -150,6 +167,33 @@ test('login endpoint issues access and refresh tokens', async () => {
   assert.equal(response.status, 200);
   assert.ok(payload.token);
   assert.ok(payload.refreshToken);
+});
+
+test('a fresh unauthenticated client can sign in after another client registers', async () => {
+  const email = `fresh-client-${Date.now()}@example.com`;
+  const registrationResponse = await fetch(`${baseUrl}/api/v1/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email,
+      password: 'secret123',
+      displayName: 'Fresh Client',
+      role: 'survivor',
+      consentAccepted: true
+    })
+  });
+  assert.equal(registrationResponse.status, 201);
+
+  const loginResponse = await fetch(`${baseUrl}/api/v1/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password: 'secret123' })
+  });
+  const loginPayload = await loginResponse.json();
+  assert.equal(loginResponse.status, 200);
+  assert.equal(loginPayload.user.email, email);
+  assert.ok(loginPayload.token);
+  assert.ok(loginPayload.refreshToken);
 });
 
 test('refresh endpoint rotates refresh tokens', async () => {

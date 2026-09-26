@@ -1,4 +1,6 @@
-function createPersistenceStore(initialState) {
+const crypto = require('crypto');
+
+function createPersistenceStore(initialState, options = {}) {
   const allowedVisibility = new Set(['private', 'followers', 'everyone']);
   const state = {
     users: [...(initialState.users || [])],
@@ -18,6 +20,66 @@ function createPersistenceStore(initialState) {
     sessions: [],
     auditLogs: []
   };
+  let persistQueue = Promise.resolve();
+  let database = null;
+
+  function snapshot() {
+    return {
+      users: state.users,
+      journalEntries: state.journalEntries,
+      posts: state.posts,
+      followRequests: state.followRequests,
+      communities: state.communities,
+      events: state.events,
+      moderationActions: state.moderationActions,
+      blockedResources: state.blockedResources,
+      sessions: state.sessions,
+      auditLogs: state.auditLogs
+    };
+  }
+
+  function restore(snapshotData) {
+    for (const key of Object.keys(state)) {
+      state[key] = Array.isArray(snapshotData[key]) ? snapshotData[key] : state[key];
+    }
+  }
+
+  async function connectDatabase() {
+    if (!options.databaseUrl) return null;
+    if (options.database) {
+      database = options.database;
+      await database.query('SELECT 1');
+      return database;
+    }
+    const { Pool } = require('pg');
+    database = new Pool({ connectionString: options.databaseUrl });
+    await database.query('SELECT 1');
+    return database;
+  }
+
+  async function hydrate() {
+    if (!options.databaseUrl) return false;
+    const pool = await connectDatabase();
+    const result = await pool.query('SELECT data FROM application_state WHERE id = $1', ['primary']);
+    if (result.rowCount === 0) return false;
+    restore(result.rows[0].data);
+    return true;
+  }
+
+  function persist(onFailure) {
+    if (!database) return;
+    const data = JSON.stringify(snapshot());
+    persistQueue = persistQueue.catch(() => {}).then(() => database.query(
+      `INSERT INTO application_state (id, data, updated_at)
+       VALUES ($1, $2::jsonb, NOW())
+       ON CONFLICT (id) DO UPDATE SET data = EXCLUDED.data, updated_at = NOW()`,
+      ['primary', data]
+    )).catch(error => {
+      onFailure?.();
+      console.error('[persistence] Unable to save application state:', error.message);
+      throw error;
+    });
+  }
 
   function createToken(prefix) {
     return `${prefix}-${Date.now()}-${Math.random().toString(36).slice(2, 10)}`;
@@ -42,7 +104,7 @@ function createPersistenceStore(initialState) {
     };
   }
 
-  function addAudit(action, actorId, resourceType, resourceId) {
+  function addAudit(action, actorId, resourceType, resourceId, shouldPersist = true) {
     state.auditLogs.push({
       id: `audit-${state.auditLogs.length + 1}`,
       action,
@@ -51,6 +113,7 @@ function createPersistenceStore(initialState) {
       resourceId: resourceId || null,
       createdAt: new Date().toISOString()
     });
+    if (shouldPersist) persist();
   }
 
   function sanitizeJournalVisibility(value, fallback = 'private') {
@@ -218,7 +281,7 @@ function createPersistenceStore(initialState) {
       return state.blockedResources.filter(entry => entry.userId === userId);
     },
 
-    createUser(input) {
+    createUser(input, options = {}) {
       const privacySettings = buildPrivacySettings(input.privacySettings);
       const profile = {
         bio: input.profile?.bio || '',
@@ -235,7 +298,7 @@ function createPersistenceStore(initialState) {
       const user = {
         id: `user-${state.users.length + 1}`,
         email: input.email,
-        password: input.password,
+        password: crypto.scryptSync(input.password, input.email, 64).toString('hex'),
         displayName: input.displayName,
         role: input.role || 'survivor',
         privacySettings,
@@ -245,12 +308,25 @@ function createPersistenceStore(initialState) {
         onboarding
       };
       state.users.push(user);
-      addAudit('user.create', user.id, 'user', user.id);
+      addAudit('user.create', user.id, 'user', user.id, options.persist !== false);
       return user;
     },
 
+    registerUser(input) {
+      const previousState = JSON.parse(JSON.stringify(snapshot()));
+      const user = this.createUser(input, { persist: false });
+      const session = this.issueSession(user.id, { persist: false });
+      persist(() => restore(previousState));
+      return { user, session };
+    },
+
     findUserByCredentials(email, password) {
-      return state.users.find(candidate => candidate.email === email && candidate.password === password) || null;
+      const user = state.users.find(candidate => candidate.email === email);
+      if (!user) return null;
+      const candidateHash = crypto.scryptSync(password, email, 64).toString('hex');
+      const valid = user.password.length === candidateHash.length
+        && crypto.timingSafeEqual(Buffer.from(user.password), Buffer.from(candidateHash));
+      return valid ? user : null;
     },
 
     findUserByEmail(email) {
@@ -261,7 +337,7 @@ function createPersistenceStore(initialState) {
       return state.users;
     },
 
-    issueSession(userId) {
+    issueSession(userId, options = {}) {
       const user = state.users.find(candidate => candidate.id === userId);
       if (!user) return null;
       const session = {
@@ -275,7 +351,7 @@ function createPersistenceStore(initialState) {
         revokedAt: null
       };
       state.sessions.push(session);
-      addAudit('auth.session.issued', userId, 'session', session.id);
+      addAudit('auth.session.issued', userId, 'session', session.id, options.persist !== false);
       return session;
     },
 
@@ -568,6 +644,17 @@ function createPersistenceStore(initialState) {
 
     listAuditLogs() {
       return state.auditLogs;
+    },
+
+    hydrate,
+
+    async flush() {
+      try {
+        await persistQueue;
+      } catch (error) {
+        persistQueue = Promise.resolve();
+        throw error;
+      }
     }
   };
 }
