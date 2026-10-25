@@ -1198,6 +1198,31 @@ function serveStatic(req, res, pathname) {
       return;
     }
 
+    if (req.method === 'GET' && url.pathname === '/api/v1/me/notifications') {
+      const user = getAuthenticatedUser(req);
+      if (!user) {
+        sendJson(res, 401, { error: 'authentication required' });
+        return;
+      }
+      const pendingFollowRequests = store.listFollowRequests(user.id, 'incoming')
+        .filter(request => request.status === 'pending').length;
+      const groupChats = store.listCommunities()
+        .filter(community => Array.isArray(community.members) && community.members.includes(user.id))
+        .map(community => {
+          const messages = store.listCommunityMessages(community.id);
+          const fromOthers = messages.filter(message => message.authorId !== user.id);
+          return {
+            communityId: community.id,
+            name: community.name,
+            latestMessageAt: messages.length > 0 ? messages[messages.length - 1].createdAt : null,
+            // Capped so the client can count unread without pulling full message bodies.
+            messageTimestampsFromOthers: fromOthers.slice(-50).map(message => message.createdAt)
+          };
+        });
+      sendJson(res, 200, { pendingFollowRequests, groupChats });
+      return;
+    }
+
     if (req.method === 'POST' && url.pathname === '/api/v1/me/follow-requests') {
       const user = getAuthenticatedUser(req);
       if (!user) {

@@ -717,6 +717,53 @@ test('joined members can send and read group chat messages', async () => {
   assert.equal(guestMessagesResponse.status, 403);
 });
 
+test('notifications endpoint reports pending follow requests and joined chat activity', async () => {
+  const email = `notify-${Date.now()}@example.com`;
+  const register = await fetch(`${baseUrl}/api/v1/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email, password: 'secret123', displayName: 'Notify Me', role: 'survivor', consentAccepted: true })
+  });
+  const registerPayload = await register.json();
+  assert.equal(register.status, 201);
+  const authHeaders = { Authorization: `Bearer ${registerPayload.token}` };
+
+  const initial = await fetch(`${baseUrl}/api/v1/me/notifications`, { headers: authHeaders });
+  const initialPayload = await initial.json();
+  assert.equal(initial.status, 200);
+  assert.equal(initialPayload.pendingFollowRequests, 0);
+  assert.deepEqual(initialPayload.groupChats, []);
+
+  const mayaLogin = await fetch(`${baseUrl}/api/v1/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'maya@example.com', password: 'secret' })
+  });
+  const mayaPayload = await mayaLogin.json();
+  const followRequest = await fetch(`${baseUrl}/api/v1/me/follow-requests`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${mayaPayload.token}` },
+    body: JSON.stringify({ email })
+  });
+  assert.equal(followRequest.status, 201);
+
+  const join = await fetch(`${baseUrl}/api/v1/communities/c1/join`, { method: 'POST', headers: authHeaders });
+  assert.equal(join.status, 200);
+
+  const after = await fetch(`${baseUrl}/api/v1/me/notifications`, { headers: authHeaders });
+  const afterPayload = await after.json();
+  assert.equal(after.status, 200);
+  assert.equal(afterPayload.pendingFollowRequests, 1);
+  const chat = afterPayload.groupChats.find(entry => entry.communityId === 'c1');
+  assert.ok(chat);
+  assert.ok(chat.latestMessageAt);
+  assert.ok(Array.isArray(chat.messageTimestampsFromOthers));
+  assert.ok(chat.messageTimestampsFromOthers.length > 0);
+
+  const unauthenticated = await fetch(`${baseUrl}/api/v1/me/notifications`);
+  assert.equal(unauthenticated.status, 401);
+});
+
 test('communities endpoint supports filtering and detail view with join state', async () => {
   const authResponse = await fetch(`${baseUrl}/api/v1/auth/login`, {
     method: 'POST',

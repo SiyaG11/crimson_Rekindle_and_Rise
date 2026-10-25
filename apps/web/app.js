@@ -783,6 +783,64 @@ function ensureGroupChatsNavigation() {
   communityLink.insertAdjacentElement('afterend', groupChatsLink);
 }
 
+const CHAT_LAST_SEEN_KEY = 'rekindle-chat-last-seen';
+
+function readChatLastSeen() {
+  try {
+    const parsed = JSON.parse(localStorage.getItem(CHAT_LAST_SEEN_KEY) || '{}');
+    return parsed && typeof parsed === 'object' ? parsed : {};
+  } catch {
+    return {};
+  }
+}
+
+function markChatSeen(communityId) {
+  const lastSeen = readChatLastSeen();
+  lastSeen[communityId] = new Date().toISOString();
+  localStorage.setItem(CHAT_LAST_SEEN_KEY, JSON.stringify(lastSeen));
+}
+
+function setTabBadge(href, count, label) {
+  const tab = document.querySelector(`.bottom-tab[href="${href}"]`);
+  if (!tab) return;
+  let badge = tab.querySelector('.tab-badge');
+  if (count <= 0) {
+    badge?.remove();
+    return;
+  }
+  if (!badge) {
+    badge = document.createElement('span');
+    badge.className = 'tab-badge';
+    tab.appendChild(badge);
+  }
+  badge.innerHTML = `${count > 99 ? '99+' : count}<span class="sr-only"> ${label}</span>`;
+}
+
+async function refreshNotificationBadges() {
+  if (!isAuthenticated() || !document.querySelector('.bottom-tabs')) return;
+  const { response, payload } = await apiWithAuth('/api/v1/me/notifications');
+  if (!response.ok) return;
+
+  const pending = Number(payload.pendingFollowRequests) || 0;
+  setTabBadge('/community.html', pending, pending === 1 ? 'pending follow request' : 'pending follow requests');
+
+  const lastSeen = readChatLastSeen();
+  let changed = false;
+  let unread = 0;
+  (Array.isArray(payload.groupChats) ? payload.groupChats : []).forEach(chat => {
+    // First sighting of a joined chat sets a baseline so seeded history is not flagged as new.
+    if (!lastSeen[chat.communityId]) {
+      lastSeen[chat.communityId] = chat.latestMessageAt || new Date().toISOString();
+      changed = true;
+      return;
+    }
+    const seenAt = new Date(lastSeen[chat.communityId]).getTime();
+    unread += (chat.messageTimestampsFromOthers || []).filter(timestamp => new Date(timestamp).getTime() > seenAt).length;
+  });
+  if (changed) localStorage.setItem(CHAT_LAST_SEEN_KEY, JSON.stringify(lastSeen));
+  setTabBadge('/groups.html', unread, unread === 1 ? 'new message' : 'new messages');
+}
+
 async function createCommunity(event) {
   event.preventDefault();
   if (!isAuthenticated()) {
@@ -971,6 +1029,8 @@ async function loadGroupChatMessages(communityId) {
       return `<article class="group-chat-message ${isOwn ? 'is-own' : ''}"><strong>${isOwn ? 'You' : message.author?.displayName || 'Member'}</strong><span>${message.body}</span><small>${new Date(message.createdAt).toLocaleString()}</small></article>`;
     }).join('');
   container.scrollTop = container.scrollHeight;
+  markChatSeen(communityId);
+  refreshNotificationBadges();
 }
 
 async function sendGroupChatMessage(event, communityId) {
@@ -1214,9 +1274,11 @@ function renderSelectedSocialProfile(currentUser) {
   if (declineButton && requestStatus.request) declineButton.addEventListener('click', () => declineFollowRequest(requestStatus.request.id));
 }
 
-function renderFollowRequests(requests) {
+function renderFollowRequests(allRequests) {
   const container = document.getElementById('incomingRequests');
   if (!container) return;
+  const currentUserId = socialCurrentUser?.id;
+  const requests = allRequests.filter(request => request.status === 'pending' && request.targetId === currentUserId);
   if (requests.length === 0) {
     container.innerHTML = '<div class="muted">No pending follow requests.</div>';
     return;
@@ -1296,6 +1358,19 @@ function handleSocialImageChange(event) {
   reader.readAsDataURL(file);
 }
 
+const PRIVACY_CHOICE_LABELS = { private: 'Only me', followers: 'My followers', everyone: 'Everyone' };
+
+function renderDashboardPrivacyBadges(settings = {}) {
+  const container = document.getElementById('dashboardPrivacyBadges');
+  if (!container) return;
+  const label = value => PRIVACY_CHOICE_LABELS[value] || PRIVACY_CHOICE_LABELS.private;
+  container.innerHTML = `
+    <span class="badge badge-private">Profile: ${label(settings.profileVisibility)}</span>
+    <span class="badge badge-moderated">Journal: ${label(settings.journalVisibility)}</span>
+    <span class="badge badge-verified">Stories: ${label(settings.storySharing)}</span>
+  `;
+}
+
 async function loadDashboardSummary() {
   const greeting = document.getElementById('dashboardGreeting');
   const status = document.getElementById('dashboardStatus');
@@ -1323,6 +1398,7 @@ async function loadDashboardSummary() {
   greeting.textContent = `Welcome back, ${user?.displayName || 'friend'}.`;
   role.textContent = `${user?.role || 'survivor'} view`;
   status.textContent = `Your account is private by default. ${communityCount} group chats and upcoming activities are ready.`;
+  renderDashboardPrivacyBadges(user?.privacySettings);
 
   if (nextEventItem) {
     nextEvent.innerHTML = `<span class="dashboard-next-label">Next activity</span><strong>${nextEventItem.title}</strong><span>${nextEventItem.location} · ${nextEventItem.format}</span>`;
@@ -2476,6 +2552,7 @@ async function acceptFollowRequest(requestId) {
   loadSocialFeed();
   loadMemberProfile();
   loadDashboardSummary();
+  refreshNotificationBadges();
 }
 
 async function declineFollowRequest(requestId) {
@@ -2488,6 +2565,7 @@ async function declineFollowRequest(requestId) {
   setState('socialState', 'success', 'Follow request updated.');
   loadSocialFeed();
   loadMemberProfile();
+  refreshNotificationBadges();
 }
 
 async function unfollowUser(userId) {
@@ -2642,3 +2720,5 @@ loadSocialFeed();
 loadMemberProfile();
 loadDashboardSummary();
 initializeAppNavigation();
+refreshNotificationBadges();
+setInterval(refreshNotificationBadges, 30000);
