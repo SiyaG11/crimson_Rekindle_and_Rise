@@ -756,6 +756,7 @@ function initializeGroupChatsPage() {
     <section class="card area-communities">
       <p class="eyebrow">Moderated conversations</p>
       <h2>Group Chats</h2>
+      <img class="section-banner" src="/group-chats-banner.png" alt="" />
       <p class="muted">Join a group chat to read and share messages with its members.</p>
       <div id="communityState" class="state-loading">Loading group chats...</div>
       <div class="community-layout">
