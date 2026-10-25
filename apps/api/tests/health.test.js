@@ -2,7 +2,7 @@ const test = require('node:test');
 const assert = require('node:assert/strict');
 const fs = require('fs');
 const path = require('path');
-const { createServer, loadConfig } = require('../server');
+const { createServer, loadConfig, serializeDiscoverUser } = require('../server');
 
 let server;
 let baseUrl = '';
@@ -39,6 +39,34 @@ test('health endpoint responds ok', async () => {
   assert.equal(response.status, 200);
   assert.equal(payload.ok, true);
   assert.equal(payload.service, 'rekindle-rise-api');
+});
+
+test('discovery serialization includes a capped mutual follower preview', () => {
+  const viewer = { id: 'viewer', followers: ['mutual-a', 'mutual-b', 'mutual-c', 'mutual-d', 'mutual-e'] };
+  const candidate = {
+    id: 'candidate',
+    displayName: 'Candidate',
+    role: 'survivor',
+    profile: { photoUrl: '' },
+    followers: ['mutual-c', 'mutual-a', 'other-user', 'mutual-b', 'mutual-d', 'mutual-e'],
+    following: []
+  };
+  const mutualUsers = new Map([
+    ['mutual-a', { id: 'mutual-a', displayName: 'Avery Stone', profile: { photoUrl: '' } }],
+    ['mutual-b', { id: 'mutual-b', displayName: 'Blair Chen', profile: { photoUrl: 'https://example.com/blair.jpg' } }],
+    ['mutual-c', { id: 'mutual-c', displayName: 'Casey Ray', profile: { photoUrl: 'https://example.com/casey.jpg' } }],
+    ['mutual-d', { id: 'mutual-d', displayName: 'Devon Park', profile: { photoUrl: 'https://example.com/devon.jpg' } }],
+    ['mutual-e', { id: 'mutual-e', profile: { photoUrl: 'https://example.com/ignored.jpg' } }]
+  ]);
+
+  const result = serializeDiscoverUser(candidate, viewer, id => mutualUsers.get(id));
+
+  assert.equal(result.mutualFollowersCount, 5);
+  assert.deepEqual(result.mutualFollowers, [
+    { id: 'mutual-c', displayName: 'Casey Ray', profile: { photoUrl: 'https://example.com/casey.jpg' } },
+    { id: 'mutual-a', displayName: 'Avery Stone', profile: { photoUrl: '' } },
+    { id: 'mutual-b', displayName: 'Blair Chen', profile: { photoUrl: 'https://example.com/blair.jpg' } }
+  ]);
 });
 
 test('host development command loads DATABASE_URL for persistent runtime', () => {
@@ -639,6 +667,56 @@ test('joining a community records the membership', async () => {
   assert.ok(joinPayload.community.members.includes(authPayload.user.id));
 });
 
+test('joined members can send and read group chat messages', async () => {
+  const memberLogin = await fetch(`${baseUrl}/api/v1/auth/login`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ email: 'maya@example.com', password: 'secret' })
+  });
+  const memberPayload = await memberLogin.json();
+  assert.equal(memberLogin.status, 200);
+
+  const createMessageResponse = await fetch(`${baseUrl}/api/v1/communities/c1/messages`, {
+    method: 'POST',
+    headers: {
+      'Content-Type': 'application/json',
+      Authorization: `Bearer ${memberPayload.token}`
+    },
+    body: JSON.stringify({ body: 'Glad to be here today.' })
+  });
+  const createMessagePayload = await createMessageResponse.json();
+  assert.equal(createMessageResponse.status, 201);
+  assert.equal(createMessagePayload.message.body, 'Glad to be here today.');
+  assert.equal(createMessagePayload.message.author.id, memberPayload.user.id);
+
+  const messagesResponse = await fetch(`${baseUrl}/api/v1/communities/c1/messages`, {
+    headers: { Authorization: `Bearer ${memberPayload.token}` }
+  });
+  const messagesPayload = await messagesResponse.json();
+  assert.equal(messagesResponse.status, 200);
+  assert.ok(messagesPayload.messages.some(message => message.body === 'Glad to be here today.'));
+
+  const email = `group-chat-guest-${Date.now()}@example.com`;
+  const guestRegistration = await fetch(`${baseUrl}/api/v1/auth/register`, {
+    method: 'POST',
+    headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({
+      email,
+      password: 'secret123',
+      displayName: 'Group Chat Guest',
+      role: 'survivor',
+      consentAccepted: true
+    })
+  });
+  const guestPayload = await guestRegistration.json();
+  assert.equal(guestRegistration.status, 201);
+
+  const guestMessagesResponse = await fetch(`${baseUrl}/api/v1/communities/c1/messages`, {
+    headers: { Authorization: `Bearer ${guestPayload.token}` }
+  });
+  assert.equal(guestMessagesResponse.status, 403);
+});
+
 test('communities endpoint supports filtering and detail view with join state', async () => {
   const authResponse = await fetch(`${baseUrl}/api/v1/auth/login`, {
     method: 'POST',
@@ -739,6 +817,7 @@ test('events endpoint supports filtering, detail view, and RSVP flow', async () 
   assert.equal(detailResponse.status, 200);
   assert.equal(detailPayload.event.id, 'e2');
   assert.equal(detailPayload.event.rsvped, false);
+  const initialRsvpCount = detailPayload.event.rsvpCount;
 
   const rsvpResponse = await fetch(`${baseUrl}/api/v1/events/e2/rsvp`, {
     method: 'POST',
@@ -750,7 +829,7 @@ test('events endpoint supports filtering, detail view, and RSVP flow', async () 
   assert.equal(rsvpResponse.status, 200);
   assert.equal(rsvpPayload.event.id, 'e2');
   assert.equal(rsvpPayload.event.rsvped, true);
-  assert.equal(rsvpPayload.event.rsvpCount, 1);
+  assert.equal(rsvpPayload.event.rsvpCount, initialRsvpCount + 1);
 });
 
 test('moderation report and block hooks persist and feed the review queue', async () => {

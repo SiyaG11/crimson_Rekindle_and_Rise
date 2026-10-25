@@ -7,6 +7,7 @@ function createPersistenceStore(initialState, options = {}) {
     journalEntries: [...(initialState.journalEntries || [])],
     posts: [...(initialState.posts || [])],
     followRequests: [...(initialState.followRequests || [])],
+    groupMessages: [...(initialState.groupMessages || [])],
     communities: (initialState.communities || []).map(community => ({
       ...community,
       topics: Array.isArray(community.topics) ? [...community.topics] : [],
@@ -29,6 +30,7 @@ function createPersistenceStore(initialState, options = {}) {
       journalEntries: state.journalEntries,
       posts: state.posts,
       followRequests: state.followRequests,
+      groupMessages: state.groupMessages,
       communities: state.communities,
       events: state.events,
       moderationActions: state.moderationActions,
@@ -144,6 +146,32 @@ function createPersistenceStore(initialState, options = {}) {
 
     findCommunityById(id) {
       return state.communities.find(community => community.id === id) || null;
+    },
+
+    listCommunityMessages(communityId) {
+      return state.groupMessages
+        .filter(message => message.communityId === communityId)
+        .sort((left, right) => new Date(left.createdAt) - new Date(right.createdAt));
+    },
+
+    createCommunityMessage(communityId, userId, body) {
+      const community = state.communities.find(candidate => candidate.id === communityId);
+      if (!community) return { error: 'group chat not found' };
+      if (!community.members.includes(userId)) return { error: 'join this group chat before sending messages' };
+      const text = typeof body === 'string' ? body.trim() : '';
+      if (!text) return { error: 'message is required' };
+      if (text.length > 1000) return { error: 'message must be 1000 characters or fewer' };
+
+      const message = {
+        id: `group-message-${state.groupMessages.length + 1}`,
+        communityId,
+        authorId: userId,
+        body: text,
+        createdAt: new Date().toISOString()
+      };
+      state.groupMessages.push(message);
+      addAudit('community.message.create', userId, 'community-message', message.id);
+      return { message };
     },
 
     joinCommunity(communityId, userId) {

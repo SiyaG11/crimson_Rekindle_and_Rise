@@ -651,6 +651,26 @@ function updateAuthButtons() {
   loginButton.textContent = authMode === 'login' ? 'Use registration' : 'Sign in';
 }
 
+function addLandingPageButton() {
+  if (document.body.dataset.page === 'auth' || document.getElementById('landingPageBtn')) return;
+  const hero = document.querySelector('.hero');
+  const loginButton = document.getElementById('loginBtn');
+  if (!hero || !loginButton) return;
+
+  const actions = document.createElement('div');
+  actions.className = 'hero-actions';
+  const landingPageButton = document.createElement('a');
+  landingPageButton.id = 'landingPageBtn';
+  landingPageButton.className = 'hero-home-link secondary';
+  landingPageButton.href = '/landing.html';
+  landingPageButton.setAttribute('aria-label', 'Go to landing page');
+  landingPageButton.title = 'Go to landing page';
+  landingPageButton.innerHTML = '<span class="material-symbol" aria-hidden="true">home</span>Landing Page';
+
+  loginButton.before(actions);
+  actions.append(landingPageButton, loginButton);
+}
+
 function bindDashboardActions() {
   document.querySelectorAll('[data-scroll-target]').forEach(button => {
     button.addEventListener('click', () => {
@@ -696,6 +716,70 @@ function bindCommunityActions() {
   document.getElementById('communityModeratedOnly')?.addEventListener('change', triggerReload);
   document.getElementById('communityVerifiedOnly')?.addEventListener('change', triggerReload);
   document.getElementById('communityCreateForm')?.addEventListener('submit', createCommunity);
+}
+
+function socialPanelMarkup() {
+  return `
+    <section class="card area-social">
+      <h2>People suggestions</h2>
+      <div id="socialState" class="state-empty">Loading people suggestions...</div>
+      <div class="directory-search">
+        <input id="peopleSearch" type="search" aria-label="Search people suggestions" placeholder="Search people" />
+      </div>
+      <div id="userDirectory" class="directory-grid"></div>
+      <div id="incomingRequests" class="request-list"></div>
+    </section>
+  `;
+}
+
+function initializeCommunitySocial() {
+  if (document.body.dataset.page !== 'community') return;
+  const main = document.getElementById('mainContent');
+  if (!main) return;
+  document.title = 'Community | Rekindle & Rise';
+  main.classList.add('community-social-page');
+  main.innerHTML = socialPanelMarkup();
+}
+
+function initializeGroupChatsPage() {
+  if (document.body.dataset.page !== 'groups') return;
+  const main = document.getElementById('mainContent');
+  if (!main) return;
+  document.title = 'Group Chats | Rekindle & Rise';
+  const headerEyebrow = document.querySelector('.hero .eyebrow');
+  const headerTitle = document.querySelector('.hero h1');
+  const headerSubtitle = document.querySelector('.hero .subtitle');
+  if (headerEyebrow) headerEyebrow.textContent = 'Moderated conversations';
+  if (headerTitle) headerTitle.textContent = 'Group Chats';
+  if (headerSubtitle) headerSubtitle.textContent = 'Join a group chat to connect at your own pace.';
+  main.innerHTML = `
+    <section class="card area-communities">
+      <p class="eyebrow">Moderated conversations</p>
+      <h2>Group Chats</h2>
+      <p class="muted">Join a group chat to read and share messages with its members.</p>
+      <div id="communityState" class="state-loading">Loading group chats...</div>
+      <div class="community-layout">
+        <div class="event-list" id="communityList"></div>
+        <div class="community-detail" id="communityDetail"><div id="communityDetailState" class="state-empty">Select a group chat to get started.</div><div id="communityDetailBody"></div></div>
+      </div>
+    </section>
+  `;
+}
+
+function ensureGroupChatsNavigation() {
+  const navigation = document.querySelector('.bottom-tabs');
+  const communityLink = navigation?.querySelector('a[href="/community.html"]');
+  if (!navigation || !communityLink || navigation.querySelector('a[href="/groups.html"]')) return;
+  communityLink.textContent = 'Community';
+  const groupChatsLink = document.createElement('a');
+  groupChatsLink.className = 'bottom-tab';
+  groupChatsLink.href = '/groups.html';
+  groupChatsLink.textContent = 'Group Chats';
+  if (document.body.dataset.page === 'groups') {
+    communityLink.classList.remove('is-active');
+    groupChatsLink.classList.add('is-active');
+  }
+  communityLink.insertAdjacentElement('afterend', groupChatsLink);
 }
 
 async function createCommunity(event) {
@@ -804,7 +888,7 @@ function renderCommunityDetail(community) {
 
   if (!community) {
     state.className = 'state-empty';
-    state.textContent = 'Select a community to view details.';
+    state.textContent = 'Select a group chat to get started.';
     body.innerHTML = '';
     return;
   }
@@ -812,30 +896,41 @@ function renderCommunityDetail(community) {
   const topicText = (community.topics || []).join(', ') || 'General support';
   state.className = 'state-success';
   state.textContent = community.joined
-    ? `You are a member of ${community.name}.`
-    : `${community.name} is open for joining.`;
+    ? `You are in ${community.name}.`
+    : `Join ${community.name} to enter its group chat.`;
+
+  if (community.joined) {
+    body.innerHTML = `
+      <div class="group-chat-window">
+        <header class="group-chat-header">
+          <div>
+            <h3>${community.name}</h3>
+            <p class="muted">${community.membersCount || 0} members · ${community.format || 'online'} · ${topicText}</p>
+          </div>
+          <span class="badge badge-private">Joined</span>
+        </header>
+        <div id="groupChatMessages" class="group-chat-messages" aria-live="polite">Loading messages...</div>
+        <form id="groupChatForm" class="group-chat-form"><textarea id="groupChatBody" aria-label="Group chat message" maxlength="1000" placeholder="Write a message to ${community.name}..."></textarea><button type="submit">Send message</button></form>
+      </div>
+    `;
+    body.querySelector('#groupChatForm')?.addEventListener('submit', event => sendGroupChatMessage(event, community.id));
+    loadGroupChatMessages(community.id);
+    return;
+  }
 
   body.innerHTML = `
     <h3>${community.name}</h3>
     <p>${community.description || ''}</p>
-    <p class="muted">${community.membersCount || 0} members · ${community.format || 'online'} · ${community.location || 'Virtual'}</p>
+    <p class="muted">${community.membersCount || 0} members · ${community.format || 'online'}</p>
     <p class="muted">Topics: ${topicText}</p>
     <div class="badge-row">
       ${community.moderated ? '<span class="badge badge-moderated">Moderated</span>' : ''}
-      ${community.verified ? '<span class="badge badge-verified">Verified</span>' : ''}
-      ${community.joined ? '<span class="badge badge-private">Joined</span>' : '<span class="badge badge-private">Not joined</span>'}
-      ${community.reportedByMe ? '<span class="badge badge-moderated">Report pending</span>' : ''}
+      <span class="badge badge-private">Join to chat</span>
     </div>
-    <div class="action-row action-row-subtle">
-      <button type="button" data-community-detail-join="${community.id}" ${community.joined ? 'disabled' : ''}>${community.joined ? 'Joined' : 'Join community'}</button>
-      <button type="button" class="secondary subtle-action" data-community-report="${community.id}" ${community.reportedByMe ? 'disabled' : ''}>${community.reportedByMe ? 'Reported' : 'Report'}</button>
-      <button type="button" class="secondary subtle-action" data-community-block="${community.id}">Block</button>
-    </div>
+    <div class="action-row action-row-subtle"><button type="button" data-community-detail-join="${community.id}">Join group chat</button></div>
   `;
 
   body.querySelector('[data-community-detail-join]')?.addEventListener('click', joinCommunity);
-  body.querySelector('[data-community-report]')?.addEventListener('click', () => reportResource('community', community.id, 'communityState'));
-  body.querySelector('[data-community-block]')?.addEventListener('click', () => blockResource('community', community.id, 'communityState'));
 }
 
 function selectCommunity(communityId) {
@@ -845,6 +940,53 @@ function selectCommunity(communityId) {
   document.querySelectorAll('[data-community-card-id]').forEach(node => {
     node.classList.toggle('is-selected', node.getAttribute('data-community-card-id') === communityId);
   });
+}
+
+let groupChatCurrentUserId = null;
+
+async function resolveGroupChatCurrentUserId() {
+  if (groupChatCurrentUserId) return groupChatCurrentUserId;
+  const { response, payload } = await apiWithAuth('/api/v1/me');
+  groupChatCurrentUserId = response.ok ? payload.user?.id || null : null;
+  return groupChatCurrentUserId;
+}
+
+async function loadGroupChatMessages(communityId) {
+  const container = document.getElementById('groupChatMessages');
+  if (!container) return;
+  const [currentUserId, { response, payload }] = await Promise.all([
+    resolveGroupChatCurrentUserId(),
+    apiWithAuth(`/api/v1/communities/${communityId}/messages`)
+  ]);
+  if (!response.ok) {
+    container.textContent = payload.error || 'Unable to load messages right now.';
+    return;
+  }
+  const messages = Array.isArray(payload.messages) ? payload.messages : [];
+  container.innerHTML = messages.length === 0
+    ? '<p class="muted group-chat-empty">No messages yet. Start the conversation gently.</p>'
+    : messages.map(message => {
+      const isOwn = Boolean(currentUserId) && message.author?.id === currentUserId;
+      return `<article class="group-chat-message ${isOwn ? 'is-own' : ''}"><strong>${isOwn ? 'You' : message.author?.displayName || 'Member'}</strong><span>${message.body}</span><small>${new Date(message.createdAt).toLocaleString()}</small></article>`;
+    }).join('');
+  container.scrollTop = container.scrollHeight;
+}
+
+async function sendGroupChatMessage(event, communityId) {
+  event.preventDefault();
+  const bodyField = document.getElementById('groupChatBody');
+  const body = bodyField?.value?.trim() || '';
+  if (!body) return;
+  const { response, payload } = await apiWithAuth(`/api/v1/communities/${communityId}/messages`, {
+    method: 'POST',
+    body: JSON.stringify({ body })
+  });
+  if (!response.ok) {
+    setState('communityState', 'error', payload.error || 'Unable to send your message right now.');
+    return;
+  }
+  if (bodyField) bodyField.value = '';
+  await loadGroupChatMessages(communityId);
 }
 
 function bindSocialActions() {
@@ -858,6 +1000,9 @@ function bindSocialActions() {
   document.getElementById('followForm')?.addEventListener('submit', requestFollowByEmail);
   document.getElementById('socialForm')?.addEventListener('submit', createSocialPost);
   document.getElementById('socialPostImage')?.addEventListener('change', handleSocialImageChange);
+  document.getElementById('peopleSearch')?.addEventListener('input', () => {
+    renderSocialDirectory(socialUsers, socialCurrentUser);
+  });
 }
 
 function getSelectedSocialProfile() {
@@ -876,29 +1021,115 @@ function getSocialRequestStatus(userId) {
 function renderSocialDirectory(users, currentUser) {
   const container = document.getElementById('userDirectory');
   if (!container) return;
-  const others = users.filter(user => user.id !== currentUser?.id);
+  const searchTerm = document.getElementById('peopleSearch')?.value.trim().toLowerCase() || '';
+  const others = users.filter(user => {
+    if (user.id === currentUser?.id) return false;
+    if (!searchTerm) return true;
+    const searchableProfile = [
+      user.displayName,
+      user.role,
+      user.profile?.bio,
+      user.profile?.location
+    ].filter(Boolean).join(' ').toLowerCase();
+    return searchableProfile.includes(searchTerm);
+  });
   if (others.length === 0) {
-    container.innerHTML = '<div class="muted">No other profiles are available yet.</div>';
+    container.innerHTML = searchTerm
+      ? '<div class="muted">No people match your search.</div>'
+      : '<div class="muted">No other profiles are available yet.</div>';
     return;
   }
 
-  container.innerHTML = others.map(user => `
-    <button type="button" class="user-card ${user.id === selectedSocialProfileId ? 'is-selected' : ''}" data-profile-id="${user.id}">
-      <strong>${user.displayName}</strong>
-      <span class="muted">${user.role} · ${user.followersCount} followers</span>
-      <span class="muted">${user.relationship === 'following' ? 'Following' : user.relationship === 'follower' ? 'Follower' : 'Open profile'}</span>
-    </button>
-  `).join('');
+  container.innerHTML = others.map(user => {
+    const initials = user.displayName
+      .split(/\s+/)
+      .filter(Boolean)
+      .slice(0, 2)
+      .map(name => name[0])
+      .join('')
+      .toUpperCase();
+    const photoMarkup = user.profile?.photoUrl
+      ? `<img src="${user.profile.photoUrl}" alt="" />`
+      : `<span aria-hidden="true">${initials}</span>`;
+    const mutualFollowersCount = Number(user.mutualFollowersCount) || 0;
+    const mutualFollowersLabel = mutualFollowersCount === 1
+      ? '1 mutual follower'
+      : `${mutualFollowersCount} mutual followers`;
+    const requestStatus = getSocialRequestStatus(user.id);
+    const followAction = user.relationship === 'following'
+      ? '<button type="button" class="user-card-follow" disabled>Following</button>'
+      : requestStatus.type === 'pending'
+        ? '<button type="button" class="user-card-follow" disabled>Requested</button>'
+        : `<button type="button" class="user-card-follow" data-follow-profile="${user.id}"><span class="material-symbol" aria-hidden="true">person_add</span>Follow</button>`;
+
+    return `
+      <article class="user-card ${user.id === selectedSocialProfileId ? 'is-selected' : ''}">
+        <button type="button" class="user-card-open" data-profile-id="${user.id}" aria-label="View ${user.displayName}'s profile">
+          <span class="user-card-cover"><span class="user-card-avatar">${photoMarkup}</span></span>
+          <span class="user-card-content">
+          <strong>${user.displayName}</strong>
+          <span class="user-card-mutual"><span class="material-symbol" aria-hidden="true">group</span>${mutualFollowersLabel}</span>
+          <span class="user-card-profile-action">View profile<span class="material-symbol" aria-hidden="true">arrow_forward</span></span>
+          </span>
+        </button>
+        ${followAction}
+      </article>
+    `;
+  }).join('');
 
   container.querySelectorAll('[data-profile-id]').forEach(button => {
-    button.addEventListener('click', () => selectSocialProfile(button.getAttribute('data-profile-id')));
+    button.addEventListener('click', () => {
+      const profileId = button.getAttribute('data-profile-id');
+      if (profileId) window.location.href = `/member-profile.html?user=${encodeURIComponent(profileId)}`;
+    });
   });
+  container.querySelectorAll('[data-follow-profile]').forEach(button => {
+    button.addEventListener('click', () => requestFollow(button.getAttribute('data-follow-profile')));
+  });
+}
+
+async function loadMemberProfile() {
+  if (document.body.dataset.page !== 'member-profile') return;
+  const state = document.getElementById('selectedProfileState');
+  const detail = document.getElementById('selectedProfileDetail');
+  const title = document.getElementById('memberProfileTitle');
+  const profileId = new URLSearchParams(window.location.search).get('user');
+  if (!state || !detail || !profileId) {
+    setState('selectedProfileState', 'error', 'This member profile could not be found.');
+    return;
+  }
+
+  setState('selectedProfileState', 'loading', 'Loading member profile...');
+  const [socialResult, usersResult, requestsResult] = await Promise.all([
+    apiWithAuth('/api/v1/me/social?scope=followers'),
+    apiWithAuth('/api/v1/users'),
+    apiWithAuth('/api/v1/me/follow-requests?scope=all')
+  ]);
+  const profile = usersResult.payload?.users?.find(user => user.id === profileId);
+  if (!socialResult.response.ok || !usersResult.response.ok || !requestsResult.response.ok || !profile) {
+    setState('selectedProfileState', 'error', 'This member profile is unavailable right now.');
+    detail.innerHTML = '';
+    return;
+  }
+
+  socialCurrentUser = socialResult.payload?.user || null;
+  socialUsers = usersResult.payload.users;
+  socialRequests = Array.isArray(requestsResult.payload?.requests) ? requestsResult.payload.requests : [];
+  selectedSocialProfileId = profile.id;
+  if (title) title.textContent = 'Community';
+  renderSelectedSocialProfile(socialCurrentUser);
 }
 
 function renderSelectedSocialProfile(currentUser) {
   const state = document.getElementById('selectedProfileState');
   const detail = document.getElementById('selectedProfileDetail');
   if (!state || !detail) return;
+  const escapeHtml = value => String(value)
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll("'", '&#39;');
 
   const profile = getSelectedSocialProfile() || socialUsers.find(user => user.relationship !== 'self') || null;
   if (!profile) {
@@ -919,6 +1150,28 @@ function renderSelectedSocialProfile(currentUser) {
         : profile.relationship === 'following'
           ? '<button type="button" class="secondary" data-unfollow-profile>Unfollow</button>'
           : '<button type="button" data-request-follow>Request to follow</button>';
+  const mutualFollowersCount = Number(profile.mutualFollowersCount) || 0;
+  const mutualFollowers = Array.isArray(profile.mutualFollowers)
+    ? profile.mutualFollowers.filter(follower => typeof follower?.displayName === 'string' && follower.displayName.trim())
+    : [];
+  const mutualFollowersLabel = mutualFollowersCount === 1
+    ? '1 total mutual follower'
+    : `${mutualFollowersCount} total mutual followers`;
+  const mutualAvatarsMarkup = mutualFollowers.length > 0
+    ? `<div class="profile-detail-mutuals"><span class="profile-detail-mutual-label">Mutual followers</span><span class="profile-detail-mutual-avatars" role="img" aria-label="Mutual follower avatars: ${escapeHtml(mutualFollowers.map(follower => follower.displayName).join(', '))}; ${mutualFollowersLabel}">${mutualFollowers.map(follower => {
+      const initials = follower.displayName
+        .split(/\s+/)
+        .filter(Boolean)
+        .slice(0, 2)
+        .map(name => name[0])
+        .join('')
+        .toUpperCase();
+      const avatar = follower.profile?.photoUrl
+        ? `<img src="${escapeHtml(follower.profile.photoUrl)}" alt="" />`
+        : `<span aria-hidden="true">${escapeHtml(initials)}</span>`;
+      return `<span class="profile-detail-mutual-avatar" aria-hidden="true" title="${escapeHtml(follower.displayName)}">${avatar}</span>`;
+    }).join('')}</span></div>`
+    : '';
 
   state.className = 'state-success';
   state.textContent = profile.relationship === 'following'
@@ -935,13 +1188,14 @@ function renderSelectedSocialProfile(currentUser) {
         <strong>${profile.displayName}</strong>
         <div class="muted">${profile.role}</div>
       </div>
-      <span class="badge ${profile.relationship === 'following' ? 'badge-verified' : 'badge-moderated'}">${profile.relationship}</span>
+      ${profile.relationship !== 'none' ? `<span class="badge ${profile.relationship === 'following' ? 'badge-verified' : 'badge-moderated'}">${profile.relationship}</span>` : ''}
     </div>
     <div class="profile-detail-meta">
       <span>${profile.profile?.bio || 'No bio added yet.'}</span>
       <span class="muted">${profile.profile?.location || 'No location listed'}</span>
       <span class="muted">${profile.followersCount} followers · ${profile.followingCount} following</span>
     </div>
+    ${mutualAvatarsMarkup}
     <div class="profile-detail-actions">
       ${actionMarkup}
     </div>
@@ -1060,17 +1314,14 @@ async function loadDashboardSummary() {
   const meResult = await apiWithAuth('/api/v1/me');
   const communitiesResult = await api('/api/v1/communities');
   const eventsResult = await api('/api/v1/events');
-  const socialResult = await apiWithAuth(`/api/v1/me/social?scope=${socialFeedScope}`);
 
   const user = meResult.payload.user;
   const communityCount = Array.isArray(communitiesResult.payload.communities) ? communitiesResult.payload.communities.length : 0;
   const nextEventItem = Array.isArray(eventsResult.payload.events) && eventsResult.payload.events.length > 0 ? eventsResult.payload.events[0] : null;
-  const followerCount = Array.isArray(socialResult.payload.followers) ? socialResult.payload.followers.length : 0;
-  const followingCount = Array.isArray(socialResult.payload.following) ? socialResult.payload.following.length : 0;
 
   greeting.textContent = `Welcome back, ${user?.displayName || 'friend'}.`;
   role.textContent = `${user?.role || 'survivor'} view`;
-  status.textContent = `Your account is private by default. ${communityCount} communities, ${followerCount} followers, and ${followingCount} following are ready.`;
+  status.textContent = `Your account is private by default. ${communityCount} group chats and upcoming activities are ready.`;
 
   if (nextEventItem) {
     nextEvent.innerHTML = `<span class="dashboard-next-label">Next activity</span><strong>${nextEventItem.title}</strong><span>${nextEventItem.location} · ${nextEventItem.format}</span>`;
@@ -1080,94 +1331,34 @@ async function loadDashboardSummary() {
 async function loadSocialFeed() {
   const state = document.getElementById('socialState');
   const feed = document.getElementById('socialFeed');
-  const followersCount = document.getElementById('followersCount');
-  const followingCount = document.getElementById('followingCount');
-  const socialFeedCount = document.getElementById('socialFeedCount');
-  const followersList = document.getElementById('followersList');
-  const followingList = document.getElementById('followingList');
   const userDirectory = document.getElementById('userDirectory');
   const incomingRequests = document.getElementById('incomingRequests');
-  const selectedProfileState = document.getElementById('selectedProfileState');
-  const selectedProfileDetail = document.getElementById('selectedProfileDetail');
 
-  if (!state || !feed || !followersCount || !followingCount || !socialFeedCount || !followersList || !followingList || !userDirectory || !incomingRequests || !selectedProfileState || !selectedProfileDetail) return;
-
-  document.querySelectorAll('[data-social-scope]').forEach(button => {
-    button.classList.toggle('active', button.getAttribute('data-social-scope') === socialFeedScope);
-  });
+  if (!state) return;
 
   if (!isAuthenticated()) {
     state.className = 'state-empty';
-    state.textContent = 'Sign in to follow people and see their posts here.';
-    feed.innerHTML = '';
-    followersList.innerHTML = '';
-    followingList.innerHTML = '';
-    userDirectory.innerHTML = '';
-    incomingRequests.innerHTML = '';
-    selectedProfileState.className = 'state-empty';
-    selectedProfileState.textContent = 'Click a person to view their profile and request to follow them.';
-    selectedProfileDetail.innerHTML = '';
-    followersCount.textContent = '0';
-    followingCount.textContent = '0';
-    socialFeedCount.textContent = '0';
+    state.textContent = feed ? 'Sign in to see follower posts here.' : 'Sign in to discover people in the community.';
+    if (feed) feed.innerHTML = '';
+    if (userDirectory) userDirectory.innerHTML = '';
+    if (incomingRequests) incomingRequests.innerHTML = '';
     return;
   }
 
-  state.className = 'state-loading';
-  state.textContent = 'Loading follower posts...';
-  const [socialResult, usersResult, requestsResult] = await Promise.all([
-    apiWithAuth(`/api/v1/me/social?scope=${socialFeedScope}`),
-    apiWithAuth('/api/v1/users'),
-    apiWithAuth('/api/v1/me/follow-requests?scope=incoming')
-  ]);
-
-  const payload = socialResult.payload || {};
-  const followers = Array.isArray(payload.followers) ? payload.followers : [];
-  const following = Array.isArray(payload.following) ? payload.following : [];
-  const posts = Array.isArray(payload.feed) ? payload.feed : [];
-  socialCurrentUser = payload.user || null;
-  socialUsers = Array.isArray(usersResult.payload?.users) ? usersResult.payload.users : [];
-  socialRequests = Array.isArray(requestsResult.payload?.requests) ? requestsResult.payload.requests : [];
-
-  if (!selectedSocialProfileId) {
-    selectedSocialProfileId = socialUsers.find(user => user.id !== socialCurrentUser?.id)?.id || null;
-  }
-
-  followersCount.textContent = String(followers.length);
-  followingCount.textContent = String(following.length);
-  socialFeedCount.textContent = String(posts.length);
-
-  followersList.innerHTML = followers.length === 0
-    ? '<span class="muted">No followers yet.</span>'
-    : followers.map(user => `<button type="button" class="chip" data-profile-id="${user.id}"><span>${user.displayName}</span><span class="muted">${user.role}</span></button>`).join('');
-
-  followingList.innerHTML = following.length === 0
-    ? '<span class="muted">You are not following anyone yet.</span>'
-    : following.map(user => `
-      <div class="chip user-chip" data-profile-id="${user.id}">
-        <span>${user.displayName}</span>
-        <button type="button" data-unfollow-id="${user.id}" class="secondary">Unfollow</button>
-      </div>
-    `).join('');
-
-  [...followersList.querySelectorAll('[data-profile-id]'), ...followingList.querySelectorAll('[data-profile-id]')].forEach(button => {
-    button.addEventListener('click', () => selectSocialProfile(button.getAttribute('data-profile-id')));
-  });
-
-  followingList.querySelectorAll('[data-unfollow-id]').forEach(button => {
-    button.addEventListener('click', event => {
-      event.stopPropagation();
-      unfollowUser(button.getAttribute('data-unfollow-id'));
-    });
-  });
-
-  renderSocialDirectory(socialUsers, socialCurrentUser);
-  renderSelectedSocialProfile(socialCurrentUser);
-  renderFollowRequests(socialRequests);
-
-  feed.innerHTML = posts.length === 0
-    ? '<div class="state-empty">No posts in this feed yet. When followers post, they will appear here.</div>'
-    : posts.map(post => `
+  if (feed) {
+    state.className = 'state-loading';
+    state.textContent = 'Loading follower posts...';
+    const { response, payload } = await apiWithAuth('/api/v1/me/social?scope=followers');
+    const posts = Array.isArray(payload?.feed) ? payload.feed : [];
+    if (!response.ok) {
+      state.className = 'state-error';
+      state.textContent = payload?.error || 'Unable to load follower posts.';
+      feed.innerHTML = '';
+      return;
+    }
+    feed.innerHTML = posts.length === 0
+      ? '<div class="state-empty">No follower posts yet.</div>'
+      : posts.map(post => `
       <article class="social-post">
         <div class="social-post-header">
           <strong>${post.author?.displayName || 'Someone in your circle'}</strong>
@@ -1175,15 +1366,33 @@ async function loadSocialFeed() {
         </div>
         ${post.image?.dataUrl ? `<div class="social-post-image"><img src="${post.image.dataUrl}" alt="Post image from ${post.author?.displayName || 'a follower'}" /></div>` : ''}
         <div>${post.body}</div>
-        <div class="badge-row">
-          <span class="badge badge-private">Followers</span>
-          <span class="badge badge-moderated">Separate from journal</span>
-        </div>
       </article>
     `).join('');
+    state.className = 'state-success';
+    state.textContent = 'Follower posts loaded.';
+    return;
+  }
 
+  if (!userDirectory || !incomingRequests) return;
+  state.className = 'state-loading';
+  state.textContent = 'Loading people suggestions...';
+  const [socialResult, usersResult, requestsResult] = await Promise.all([
+    apiWithAuth('/api/v1/me/social?scope=followers'),
+    apiWithAuth('/api/v1/users'),
+    apiWithAuth('/api/v1/me/follow-requests?scope=all')
+  ]);
+  if (!socialResult.response.ok || !usersResult.response.ok || !requestsResult.response.ok) {
+    state.className = 'state-error';
+    state.textContent = 'Unable to load people suggestions.';
+    return;
+  }
+  socialCurrentUser = socialResult.payload?.user || null;
+  socialUsers = Array.isArray(usersResult.payload?.users) ? usersResult.payload.users : [];
+  socialRequests = Array.isArray(requestsResult.payload?.requests) ? requestsResult.payload.requests : [];
+  renderSocialDirectory(socialUsers, socialCurrentUser);
+  renderFollowRequests(socialRequests);
   state.className = 'state-success';
-  state.textContent = `Loaded ${posts.length} post${posts.length === 1 ? '' : 's'} from your ${socialFeedScope} feed.`;
+  state.textContent = 'People suggestions loaded.';
 }
 
 function getDailyChallenge() {
@@ -1430,7 +1639,7 @@ function renderEventViews() {
     const day = idx + 1;
     const dayEvents = eventsByDay[day] || [];
     const chips = dayEvents.map(eventItem => `
-      <button type="button" class="calendar-event-chip" data-calendar-event-id="${eventItem.id}">
+      <button type="button" class="calendar-event-chip" data-calendar-event-id="${eventItem.id}" title="${eventItem.title}" aria-label="${eventItem.title}">
         ${eventItem.title}
       </button>
     `).join('');
@@ -1725,7 +1934,7 @@ async function loadEvents() {
 }
 
 async function loadCommunities() {
-  setState('communityState', 'loading', 'Loading communities...');
+  setState('communityState', 'loading', 'Loading group chats...');
   const query = new URLSearchParams();
   if (communityFilters.q) query.set('q', communityFilters.q);
   if (communityFilters.topic) query.set('topic', communityFilters.topic);
@@ -1742,14 +1951,14 @@ async function loadCommunities() {
   if (!container) return;
   if (!response.ok) {
     container.innerHTML = '';
-    setState('communityState', 'error', 'Unable to load communities right now.');
+    setState('communityState', 'error', 'Unable to load group chats right now.');
     return;
   }
   if (!payload.communities || payload.communities.length === 0) {
     container.innerHTML = '';
     communityCatalog = [];
     renderCommunityDetail(null);
-    setState('communityState', 'empty', 'No communities found yet.');
+    setState('communityState', 'empty', 'No group chats found yet.');
     return;
   }
   updateCommunityFilterOptions(payload.filters?.topics || []);
@@ -1781,26 +1990,27 @@ async function loadCommunities() {
     selectedCommunityId = communityCatalog[0].id;
   }
   renderCommunityDetail(communityCatalog.find(community => community.id === selectedCommunityId) || null);
-  setState('communityState', 'success', `${payload.communities.length} communities available.`);
+  setState('communityState', 'success', `${payload.communities.length} group chats available.`);
 }
 
 async function joinCommunity(event) {
   const button = event.currentTarget;
   const communityId = button.getAttribute('data-community-id') || button.getAttribute('data-community-detail-join');
   if (!isAuthenticated()) {
-    setState('communityState', 'error', 'Create or sign in to join a community.');
+    setState('communityState', 'error', 'Sign in to join a group chat.');
     return;
   }
-  setState('communityState', 'loading', 'Joining community...');
+  setState('communityState', 'loading', 'Joining group chat...');
   const { response, payload } = await apiWithAuth(`/api/v1/communities/${communityId}/join`, { method: 'POST' });
   if (!response.ok) {
     setState('communityState', 'error', payload.error || 'Unable to join this community.');
     return;
   }
   if (payload.community) {
-    setState('communityState', 'success', `Joined ${payload.community.name}.`);
+    setState('communityState', 'success', `Joined ${payload.community.name}. You can now send messages.`);
     selectedCommunityId = payload.community.id;
-    loadCommunities();
+    await loadCommunities();
+    document.getElementById('communityDetail')?.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
   }
 }
 
@@ -2033,8 +2243,10 @@ async function loadProfileSummary() {
   const bioField = document.getElementById('profileBio');
   const locationField = document.getElementById('profileLocation');
   const photoField = document.getElementById('profilePhotoUpload');
+  const followersCount = document.getElementById('profileFollowersCount');
+  const followingCount = document.getElementById('profileFollowingCount');
 
-  if (!state || !name || !role || !meta || !displayNameField || !bioField || !locationField || !photoField) return;
+  if (!state || !name || !role || !meta || !displayNameField || !bioField || !locationField || !photoField || !followersCount || !followingCount) return;
 
   if (!isAuthenticated()) {
     state.className = 'state-empty';
@@ -2042,12 +2254,17 @@ async function loadProfileSummary() {
     name.textContent = 'Display name';
     role.textContent = 'Role';
     meta.textContent = 'Location and photo are optional.';
+    followersCount.textContent = '0';
+    followingCount.textContent = '0';
     profilePhotoDataUrl = '';
     updateProfilePhotoPreview();
     return;
   }
 
-  const result = await apiWithAuth('/api/v1/me');
+  const [result, socialResult] = await Promise.all([
+    apiWithAuth('/api/v1/me'),
+    apiWithAuth('/api/v1/me/social?scope=followers')
+  ]);
   const user = result.payload.user;
   if (!result.response.ok || !user) {
     state.className = 'state-error';
@@ -2065,6 +2282,8 @@ async function loadProfileSummary() {
   name.textContent = user.displayName || 'Display name';
   role.textContent = `${user.role || 'survivor'} role`;
   meta.textContent = [profile.location || 'No location yet', profile.photoUrl ? 'Photo uploaded' : 'Photo optional'].join(' · ');
+  followersCount.textContent = String(Array.isArray(socialResult.payload?.followers) ? socialResult.payload.followers.length : 0);
+  followingCount.textContent = String(Array.isArray(socialResult.payload?.following) ? socialResult.payload.following.length : 0);
   state.className = 'state-success';
   state.textContent = 'Profile loaded.';
 }
@@ -2227,6 +2446,7 @@ async function requestFollowByEmail(event) {
   emailField.value = '';
   setState('socialState', 'success', 'Follow request sent.');
   loadSocialFeed();
+  loadMemberProfile();
 }
 
 async function requestFollow(userId) {
@@ -2241,6 +2461,7 @@ async function requestFollow(userId) {
   }
   setState('socialState', 'success', 'Follow request sent.');
   loadSocialFeed();
+  loadMemberProfile();
 }
 
 async function acceptFollowRequest(requestId) {
@@ -2252,6 +2473,7 @@ async function acceptFollowRequest(requestId) {
   }
   setState('socialState', 'success', 'Follow request accepted.');
   loadSocialFeed();
+  loadMemberProfile();
   loadDashboardSummary();
 }
 
@@ -2264,6 +2486,7 @@ async function declineFollowRequest(requestId) {
   }
   setState('socialState', 'success', 'Follow request updated.');
   loadSocialFeed();
+  loadMemberProfile();
 }
 
 async function unfollowUser(userId) {
@@ -2278,6 +2501,7 @@ async function unfollowUser(userId) {
   }
   setState('socialState', 'success', 'Unfollowed successfully.');
   loadSocialFeed();
+  loadMemberProfile();
   loadDashboardSummary();
 }
 
@@ -2382,6 +2606,10 @@ if (privacyForm) privacyForm.addEventListener('submit', savePrivacy);
 if (profileForm) profileForm.addEventListener('submit', saveProfile);
 if (notificationForm) notificationForm.addEventListener('submit', saveNotificationPreferences);
 
+initializeCommunitySocial();
+initializeGroupChatsPage();
+ensureGroupChatsNavigation();
+addLandingPageButton();
 bindHeroActions();
 bindBottomTabs();
 bindDashboardActions();
@@ -2410,5 +2638,6 @@ loadPrivacySummary();
 loadNotificationPreferences();
 loadProfileSummary();
 loadSocialFeed();
+loadMemberProfile();
 loadDashboardSummary();
 initializeAppNavigation();

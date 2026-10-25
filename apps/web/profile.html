@@ -1,3 +1,70 @@
 <!DOCTYPE html>
-<html lang="en"><head><meta charset="UTF-8" /><meta name="viewport" content="width=device-width, initial-scale=1.0" /><title>Profile | Rekindle & Rise</title><link rel="stylesheet" href="/styles.css" /></head>
-<body data-page="profile"><div class="app-shell"><header class="hero"><div class="brand-block"><img class="brand-logo" src="/logo.jpg" alt="Rekindle & Rise logo" /><div><p class="eyebrow">Your identity, your pace</p><h1>Profile</h1><p class="subtitle">Shape what you want your community to know about you.</p></div></div><button id="loginBtn" class="secondary" type="button">Sign out</button></header><nav class="bottom-tabs" aria-label="Application sections"><a class="bottom-tab" href="/dashboard.html">Dashboard</a><a class="bottom-tab" href="/journal.html">Journal</a><a class="bottom-tab" href="/community.html">Community</a><a class="bottom-tab" href="/events.html">Events</a><a class="bottom-tab is-active" href="/profile.html">Profile</a><a class="bottom-tab" href="/settings.html">Settings</a></nav><main id="mainContent" class="grid page-grid"><section class="card area-profile"><h2>Profile management</h2><div id="profileState" class="state-empty">Loading your profile...</div><div class="panel profile-summary"><h3 id="profileSummaryName">Display name</h3><p id="profileSummaryRole">Role</p><p id="profileSummaryMeta">Location and photo are optional.</p></div><form id="profileForm"><label>Display name<input id="profileDisplayName" placeholder="Your display name" /></label><label>Bio<textarea id="profileBio" placeholder="A short, kind bio"></textarea></label><label>Location<input id="profileLocation" placeholder="City, state, or region" /></label><label>Profile photo<input id="profilePhotoUpload" type="file" accept="image/*" aria-label="Upload profile photo" /></label><div id="profilePhotoPreview" class="post-image-preview state-empty">No photo selected.</div><div class="action-row"><button type="submit">Save profile</button><button id="profilePhotoRemoveBtn" type="button" class="secondary">Remove photo</button></div></form></section></main></div><script src="/app.js"></script></body></html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Profile | Rekindle &amp; Rise</title>
+    <link rel="stylesheet" href="/styles.css" />
+  </head>
+  <body data-page="profile">
+    <div class="app-shell">
+      <header class="hero">
+        <div class="brand-block">
+          <img class="brand-logo" src="/logo.jpg" alt="Rekindle &amp; Rise logo" />
+          <div>
+            <p class="eyebrow">Your identity, your pace</p>
+            <h1>Profile</h1>
+            <p class="subtitle">Shape what you want your community to know about you.</p>
+          </div>
+        </div>
+        <button id="loginBtn" class="secondary" type="button">Sign out</button>
+      </header>
+      <nav class="bottom-tabs" aria-label="Application sections">
+        <a class="bottom-tab" href="/dashboard.html">Dashboard</a>
+        <a class="bottom-tab" href="/journal.html">Journal</a>
+        <a class="bottom-tab" href="/community.html">Community</a>
+        <a class="bottom-tab" href="/events.html">Events</a>
+        <a class="bottom-tab is-active" href="/profile.html">Profile</a>
+        <a class="bottom-tab" href="/settings.html">Settings</a>
+      </nav>
+      <main id="mainContent" class="grid page-grid">
+        <section class="card area-profile">
+          <h2>Profile management</h2>
+          <div id="profileState" class="state-empty">Loading your profile...</div>
+          <div class="panel profile-summary">
+            <h3 id="profileSummaryName">Display name</h3>
+            <p id="profileSummaryRole">Role</p>
+            <p id="profileSummaryMeta">Location and photo are optional.</p>
+            <div class="profile-connection-counts">
+              <span><strong id="profileFollowersCount">0</strong> Followers</span>
+              <span><strong id="profileFollowingCount">0</strong> Following</span>
+            </div>
+          </div>
+          <form id="profileForm">
+            <label>Display name<input id="profileDisplayName" placeholder="Your display name" /></label>
+            <label>Bio<textarea id="profileBio" placeholder="A short, kind bio"></textarea></label>
+            <label>Location<input id="profileLocation" placeholder="City, state, or region" /></label>
+            <label>Profile photo<input id="profilePhotoUpload" type="file" accept="image/*" aria-label="Upload profile photo" /></label>
+            <div id="profilePhotoPreview" class="post-image-preview state-empty">No photo selected.</div>
+            <div class="action-row">
+              <button type="submit">Save profile</button>
+              <button id="profilePhotoRemoveBtn" type="button" class="secondary">Remove photo</button>
+            </div>
+          </form>
+        </section>
+        <section class="card area-social profile-post-composer">
+          <h2>Share an update</h2>
+          <div id="socialState" class="state-empty">Share with people who follow you.</div>
+          <form id="socialForm">
+            <label>Update<textarea id="socialPostBody" aria-label="Post message" placeholder="Share a small, hopeful post..."></textarea></label>
+            <label>Picture<input id="socialPostImage" type="file" accept="image/*" aria-label="Add a picture to your post" /></label>
+            <div id="socialImagePreview" class="post-image-preview state-empty">No photo selected.</div>
+            <label>Audience<select id="socialAudience"><option value="followers">Followers</option><option value="following">Following</option></select></label>
+            <button type="submit">Post update</button>
+          </form>
+        </section>
+      </main>
+    </div>
+    <script src="/app.js"></script>
+  </body>
+</html>

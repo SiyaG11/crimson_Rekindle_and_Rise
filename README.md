@@ -27,7 +27,7 @@ npm run dev
 The API now supports environment-driven infrastructure settings and startup seeding.
 
 ```bash
-# Regenerate default seed file
+# Purge mutable development data and seed the complete 10-user dataset
 npm run seed:dev
 
 # Check infrastructure configuration health (API must be running)

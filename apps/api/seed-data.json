@@ -1,69 +1,72 @@
 {
-  "users": [],
-  "journalEntries": [],
+  "users": [
+    { "id": "user-1", "email": "maya.chen@example.test", "password": "e4091660b5532f01e31974405e0089086fd491576502954429a1a47b27de6b4cb9ff435197d4658b583664d0c24ab6a4dfe280838ef1960d11c9a5dae0c63ac4", "displayName": "Maya Chen", "role": "survivor", "privacySettings": { "profileVisibility": "everyone", "journalVisibility": "private", "storySharing": "followers", "notificationPreferences": ["email", "inapp", "event_updates"] }, "profile": { "bio": "Finding steady ways to return to the things I love.", "location": "Austin, TX", "photoUrl": "" }, "followers": ["user-2", "user-3", "user-7"], "following": ["user-2", "user-3", "user-5", "user-7"], "onboarding": { "role": "survivor", "consentAccepted": true, "privacyPreferences": { "profileVisibility": "everyone", "journalVisibility": "private", "storySharing": "followers", "notificationPreferences": ["email", "inapp", "event_updates"] }, "completed": true, "completedAt": "2026-09-01T10:00:00.000Z" } },
+    { "id": "user-2", "email": "noah.rivera@example.test", "password": "fd719b0fdfd60807844c3ac6f84850553d8e6b97e747c40183adea53ecc693037840c5037539538af6c84fea71f41a6bc42dab905fe7ead54c8eebc86c6e4ed0", "displayName": "Noah Rivera", "role": "survivor", "privacySettings": { "profileVisibility": "followers", "journalVisibility": "private", "storySharing": "followers", "notificationPreferences": ["inapp", "weekly_digest"] }, "profile": { "bio": "Runner, reader, and participant in small brave steps.", "location": "Denver, CO", "photoUrl": "" }, "followers": ["user-1", "user-4", "user-6"], "following": ["user-1", "user-4", "user-6"], "onboarding": { "role": "survivor", "consentAccepted": true, "privacyPreferences": { "profileVisibility": "followers", "journalVisibility": "private", "storySharing": "followers", "notificationPreferences": ["inapp", "weekly_digest"] }, "completed": true, "completedAt": "2026-09-02T10:00:00.000Z" } },
+    { "id": "user-3", "email": "aisha.khan@example.test", "password": "f59387e3c6d18f5ddead89f2c0f3c6561d39a1c38b33afc2c1a77ff232aaafc1538acf0dd64ef4967c072fed0ace349c0b614e9ca41ae19f0832dd49a83a59f3", "displayName": "Aisha Khan", "role": "caregiver", "privacySettings": { "profileVisibility": "everyone", "journalVisibility": "private", "storySharing": "everyone", "notificationPreferences": ["email", "inapp", "community_updates"] }, "profile": { "bio": "Caregiver and listener sharing practical support.", "location": "Chicago, IL", "photoUrl": "" }, "followers": ["user-1", "user-5"], "following": ["user-1", "user-5", "user-8"], "onboarding": { "role": "caregiver", "consentAccepted": true, "privacyPreferences": { "profileVisibility": "everyone", "journalVisibility": "private", "storySharing": "everyone", "notificationPreferences": ["email", "inapp", "community_updates"] }, "completed": true, "completedAt": "2026-09-03T10:00:00.000Z" } },
+    { "id": "user-4", "email": "ben.carter@example.test", "password": "31a178ead54444545f41fcc20406ee9957c929c6f65fe88b2c2abdadb21fe83cf5ccb63b2d01ccca82322f9770074ca6a2242278a327a1d5ed381aeca8d81946", "displayName": "Ben Carter", "role": "volunteer", "privacySettings": { "profileVisibility": "everyone", "journalVisibility": "private", "storySharing": "everyone", "notificationPreferences": ["email", "inapp", "event_updates", "community_updates"] }, "profile": { "bio": "Peer volunteer focused on clear information and warm welcomes.", "location": "Portland, OR", "photoUrl": "" }, "followers": ["user-2", "user-9"], "following": ["user-2", "user-9"], "onboarding": { "role": "volunteer", "consentAccepted": true, "privacyPreferences": { "profileVisibility": "everyone", "journalVisibility": "private", "storySharing": "everyone", "notificationPreferences": ["email", "inapp", "event_updates", "community_updates"] }, "completed": true, "completedAt": "2026-09-04T10:00:00.000Z" } },
+    { "id": "user-5", "email": "lena.okafor@example.test", "password": "5be95c858abfdd6a3722c5d06b9af3512082de8542d2e008eec051e78c606dcd466aa75c17fd73c22d95b07e8f889f895c6d2386b0d3e0fd55b01e9b445c2233", "displayName": "Lena Okafor", "role": "survivor", "privacySettings": { "profileVisibility": "followers", "journalVisibility": "private", "storySharing": "followers", "notificationPreferences": ["inapp", "event_updates"] }, "profile": { "bio": "Learning to make room for rest, art, and good company.", "location": "Atlanta, GA", "photoUrl": "" }, "followers": ["user-1", "user-3", "user-10"], "following": ["user-3", "user-10"], "onboarding": { "role": "survivor", "consentAccepted": true, "privacyPreferences": { "profileVisibility": "followers", "journalVisibility": "private", "storySharing": "followers", "notificationPreferences": ["inapp", "event_updates"] }, "completed": true, "completedAt": "2026-09-05T10:00:00.000Z" } },
+    { "id": "user-6", "email": "omar.haddad@example.test", "password": "8c8c027ab1f8fca6a6d2a8208ca9a66a7cfe41114fe8d90e79b61e0ad7425b59b7033870ad51e36b702a92baafe675e5e792ba639bfeef1cfdb34dac1a59e013", "displayName": "Omar Haddad", "role": "caregiver", "privacySettings": { "profileVisibility": "followers", "journalVisibility": "private", "storySharing": "followers", "notificationPreferences": ["email", "inapp"] }, "profile": { "bio": "Here to trade useful routines and honest check-ins.", "location": "Detroit, MI", "photoUrl": "" }, "followers": ["user-2"], "following": ["user-2", "user-7"], "onboarding": { "role": "caregiver", "consentAccepted": true, "privacyPreferences": { "profileVisibility": "followers", "journalVisibility": "private", "storySharing": "followers", "notificationPreferences": ["email", "inapp"] }, "completed": true, "completedAt": "2026-09-06T10:00:00.000Z" } },
+    { "id": "user-7", "email": "sofia.martinez@example.test", "password": "253669d58aa9c0c107e50e07b6c27ad6ca747ef2a0ae3ff203a66c180e4c9ca2311a984a866f21bd782c41312f3c1ebcd901cd161b41191f72def432d275adc2", "displayName": "Sofia Martinez", "role": "survivor", "privacySettings": { "profileVisibility": "everyone", "journalVisibility": "private", "storySharing": "everyone", "notificationPreferences": ["email", "inapp", "weekly_digest"] }, "profile": { "bio": "Plant parent, podcast fan, and community-circle regular.", "location": "Phoenix, AZ", "photoUrl": "" }, "followers": ["user-1", "user-6"], "following": ["user-1", "user-6", "user-8"], "onboarding": { "role": "survivor", "consentAccepted": true, "privacyPreferences": { "profileVisibility": "everyone", "journalVisibility": "private", "storySharing": "everyone", "notificationPreferences": ["email", "inapp", "weekly_digest"] }, "completed": true, "completedAt": "2026-09-07T10:00:00.000Z" } },
+    { "id": "user-8", "email": "jordan.lee@example.test", "password": "f8b26328e3302cc65a6db7f1530e082760b0910b93a2d6a6ffa8f8e20d367e61f808db56e7a25414a0b10c6de34b83503da54ddb41fc8b7a9b5133d48ab92c64", "displayName": "Jordan Lee", "role": "volunteer", "privacySettings": { "profileVisibility": "everyone", "journalVisibility": "private", "storySharing": "everyone", "notificationPreferences": ["email", "inapp", "community_updates"] }, "profile": { "bio": "Facilitating practical resource sharing without pressure.", "location": "Seattle, WA", "photoUrl": "" }, "followers": ["user-3", "user-7"], "following": ["user-3", "user-7"], "onboarding": { "role": "volunteer", "consentAccepted": true, "privacyPreferences": { "profileVisibility": "everyone", "journalVisibility": "private", "storySharing": "everyone", "notificationPreferences": ["email", "inapp", "community_updates"] }, "completed": true, "completedAt": "2026-09-08T10:00:00.000Z" } },
+    { "id": "user-9", "email": "priya.shah@example.test", "password": "2a40279dcbf5e84f7f822572c268aee763828cd76866e8f075fef9b983654e862e0f67c6d08822358f563c0b380ce8a0759a31d179943a9e185cbed12527607d", "displayName": "Priya Shah", "role": "caregiver", "privacySettings": { "profileVisibility": "followers", "journalVisibility": "private", "storySharing": "followers", "notificationPreferences": ["email", "inapp", "event_updates"] }, "profile": { "bio": "Building a small toolkit for hard days and hopeful ones.", "location": "Boston, MA", "photoUrl": "" }, "followers": ["user-4"], "following": ["user-4", "user-10"], "onboarding": { "role": "caregiver", "consentAccepted": true, "privacyPreferences": { "profileVisibility": "followers", "journalVisibility": "private", "storySharing": "followers", "notificationPreferences": ["email", "inapp", "event_updates"] }, "completed": true, "completedAt": "2026-09-09T10:00:00.000Z" } },
+    { "id": "user-10", "email": "elliot.brooks@example.test", "password": "c198996a3586e8467cb183deea87044051bdac8e4650f2d5245340856200159812c01a497b96912f544f4569e44081c611d97107ae06ccb64b7c33ead77a87fe", "displayName": "Elliot Brooks", "role": "survivor", "privacySettings": { "profileVisibility": "followers", "journalVisibility": "private", "storySharing": "followers", "notificationPreferences": ["inapp", "weekly_digest"] }, "profile": { "bio": "Looking for gentle accountability and more time outdoors.", "location": "Raleigh, NC", "photoUrl": "" }, "followers": ["user-5", "user-9"], "following": ["user-5"], "onboarding": { "role": "survivor", "consentAccepted": true, "privacyPreferences": { "profileVisibility": "followers", "journalVisibility": "private", "storySharing": "followers", "notificationPreferences": ["inapp", "weekly_digest"] }, "completed": true, "completedAt": "2026-09-10T10:00:00.000Z" } }
+  ],
+  "journalEntries": [
+    { "id": "entry-1", "userId": "user-1", "title": "A calmer appointment", "body": "I wrote down my questions before the appointment and felt more present.", "promptReference": "small-wins", "mood": "hopeful", "visibility": "private", "createdAt": "2026-09-20T15:00:00.000Z", "updatedAt": "2026-09-20T15:00:00.000Z" },
+    { "id": "entry-2", "userId": "user-1", "title": "Making room for rest", "body": "A shorter day was still a full day. I am practicing leaving space in my calendar.", "promptReference": "daily-reflection", "mood": "steady", "visibility": "private", "createdAt": "2026-09-28T19:30:00.000Z", "updatedAt": "2026-09-28T19:30:00.000Z" },
+    { "id": "entry-3", "userId": "user-2", "title": "Back on the trail", "body": "I walked the first half-mile with a friend and stopped before I was tired.", "promptReference": "body-check-in", "mood": "grateful", "visibility": "private", "createdAt": "2026-09-22T17:00:00.000Z", "updatedAt": "2026-09-22T17:00:00.000Z" },
+    { "id": "entry-4", "userId": "user-3", "title": "A question I can ask", "body": "I can ask what support is useful today instead of guessing.", "promptReference": "caregiver-reflection", "mood": "steady", "visibility": "private", "createdAt": "2026-09-24T13:00:00.000Z", "updatedAt": "2026-09-24T13:00:00.000Z" },
+    { "id": "entry-5", "userId": "user-4", "title": "Welcoming new faces", "body": "The resource workshop had a good mix of questions and quiet moments.", "promptReference": "volunteer-notes", "mood": "grateful", "visibility": "private", "createdAt": "2026-09-25T20:00:00.000Z", "updatedAt": "2026-09-25T20:00:00.000Z" },
+    { "id": "entry-6", "userId": "user-5", "title": "Sketchbook break", "body": "Ten minutes of drawing helped my thoughts slow down.", "promptReference": "daily-reflection", "mood": "hopeful", "visibility": "private", "createdAt": "2026-09-26T16:00:00.000Z", "updatedAt": "2026-09-26T16:00:00.000Z" },
+    { "id": "entry-7", "userId": "user-6", "title": "Useful routine", "body": "We made the morning plan together, one task at a time.", "promptReference": "caregiver-reflection", "mood": "steady", "visibility": "private", "createdAt": "2026-09-27T14:00:00.000Z", "updatedAt": "2026-09-27T14:00:00.000Z" },
+    { "id": "entry-8", "userId": "user-7", "title": "Circle takeaway", "body": "Someone said progress can be quiet. I want to remember that.", "promptReference": "community-reflection", "mood": "grateful", "visibility": "private", "createdAt": "2026-09-28T18:00:00.000Z", "updatedAt": "2026-09-28T18:00:00.000Z" },
+    { "id": "entry-9", "userId": "user-8", "title": "Facilitation note", "body": "Pauses gave people time to answer in their own way.", "promptReference": "volunteer-notes", "mood": "steady", "visibility": "private", "createdAt": "2026-09-29T16:00:00.000Z", "updatedAt": "2026-09-29T16:00:00.000Z" },
+    { "id": "entry-10", "userId": "user-9", "title": "Preparing without rushing", "body": "A simple checklist made the week feel less crowded.", "promptReference": "caregiver-reflection", "mood": "hopeful", "visibility": "private", "createdAt": "2026-09-30T14:00:00.000Z", "updatedAt": "2026-09-30T14:00:00.000Z" },
+    { "id": "entry-11", "userId": "user-10", "title": "Fresh air", "body": "I sat outside for lunch and noticed the weather changing.", "promptReference": "daily-reflection", "mood": "grateful", "visibility": "private", "createdAt": "2026-10-01T17:00:00.000Z", "updatedAt": "2026-10-01T17:00:00.000Z" }
+  ],
+  "posts": [
+    { "id": "post-1", "authorId": "user-2", "body": "Tried a new route today and took it at my own pace.", "audience": "followers", "image": null, "createdAt": "2026-09-24T16:00:00.000Z" },
+    { "id": "post-2", "authorId": "user-3", "body": "A reminder for fellow caregivers: specific offers of help are easier to accept.", "audience": "everyone", "image": null, "createdAt": "2026-09-25T15:00:00.000Z" },
+    { "id": "post-3", "authorId": "user-4", "body": "The resource library has new transportation and peer-support links this week.", "audience": "everyone", "image": null, "createdAt": "2026-09-26T18:00:00.000Z" },
+    { "id": "post-4", "authorId": "user-5", "body": "My small win: I made tea before opening my laptop.", "audience": "followers", "image": null, "createdAt": "2026-09-27T13:00:00.000Z" },
+    { "id": "post-5", "authorId": "user-6", "body": "We found a routine that leaves room for a hard day.", "audience": "followers", "image": null, "createdAt": "2026-09-28T12:00:00.000Z" },
+    { "id": "post-6", "authorId": "user-7", "body": "Community Circle helped me feel less alone this week.", "audience": "everyone", "image": null, "createdAt": "2026-09-29T19:00:00.000Z" },
+    { "id": "post-7", "authorId": "user-8", "body": "Next Tuesday we will share tools for asking for accommodations.", "audience": "everyone", "image": null, "createdAt": "2026-09-30T17:00:00.000Z" },
+    { "id": "post-8", "authorId": "user-9", "body": "A shared calendar reduced a lot of small stresses in our house.", "audience": "followers", "image": null, "createdAt": "2026-10-01T15:00:00.000Z" },
+    { "id": "post-9", "authorId": "user-10", "body": "Looking forward to the outdoor accessibility meetup.", "audience": "followers", "image": null, "createdAt": "2026-10-02T14:00:00.000Z" },
+    { "id": "post-10", "authorId": "user-1", "body": "Today I chose one useful thing and let that be enough.", "audience": "followers", "image": null, "createdAt": "2026-10-03T09:00:00.000Z" }
+  ],
+  "followRequests": [
+    { "id": "follow-request-1", "requesterId": "user-8", "targetId": "user-1", "message": "I appreciated your check-in at Community Circle.", "status": "pending", "createdAt": "2026-10-01T12:00:00.000Z", "resolvedAt": null, "resolvedBy": null },
+    { "id": "follow-request-2", "requesterId": "user-10", "targetId": "user-2", "message": "Your trail post was encouraging.", "status": "accepted", "createdAt": "2026-09-21T12:00:00.000Z", "resolvedAt": "2026-09-22T09:00:00.000Z", "resolvedBy": "user-2" }
+  ],
+  "groupMessages": [
+    { "id": "group-message-1", "communityId": "c1", "authorId": "user-4", "body": "Welcome everyone. Share only what feels comfortable today.", "createdAt": "2026-09-28T18:00:00.000Z" },
+    { "id": "group-message-2", "communityId": "c1", "authorId": "user-1", "body": "I am glad to be here. Small steps have been enough this week.", "createdAt": "2026-09-28T18:05:00.000Z" },
+    { "id": "group-message-3", "communityId": "c2", "authorId": "user-3", "body": "Does anyone have a favorite way to organize appointment notes?", "createdAt": "2026-09-29T16:00:00.000Z" },
+    { "id": "group-message-4", "communityId": "c2", "authorId": "user-6", "body": "A shared note with questions at the top has helped us.", "createdAt": "2026-09-29T16:08:00.000Z" },
+    { "id": "group-message-5", "communityId": "c3", "authorId": "user-8", "body": "The resource list is updated with accessible recreation options.", "createdAt": "2026-10-01T17:30:00.000Z" }
+  ],
   "communities": [
-    {
-      "id": "c1",
-      "name": "Returning to School",
-      "description": "Support for transitions and confidence.",
-      "moderated": true,
-      "verified": true,
-      "format": "hybrid",
-      "topics": ["education", "confidence", "peer-support"],
-      "location": "Virtual + Local Chapters",
-      "members": []
-    },
-    {
-      "id": "c2",
-      "name": "Caregiver Support",
-      "description": "Resources for family and supporters.",
-      "moderated": true,
-      "verified": true,
-      "format": "online",
-      "topics": ["caregiving", "resources", "family"],
-      "location": "Virtual",
-      "members": []
-    }
+    { "id": "c1", "name": "Returning to School", "description": "Support for transitions, accommodations, and confidence.", "moderated": true, "verified": true, "format": "hybrid", "topics": ["education", "confidence", "peer-support"], "location": "Virtual + Local Chapters", "createdBy": "user-4", "createdAt": "2026-08-01T10:00:00.000Z", "members": ["user-1", "user-2", "user-4", "user-7"] },
+    { "id": "c2", "name": "Caregiver Support", "description": "Practical resources and room to ask questions without judgment.", "moderated": true, "verified": true, "format": "online", "topics": ["caregiving", "resources", "family"], "location": "Virtual", "createdBy": "user-3", "createdAt": "2026-08-04T10:00:00.000Z", "members": ["user-3", "user-5", "user-6", "user-9"] },
+    { "id": "c3", "name": "Accessible Outdoors", "description": "Planning gentle outdoor time and sharing accessible local options.", "moderated": true, "verified": false, "format": "hybrid", "topics": ["accessibility", "wellbeing", "outdoors"], "location": "Seattle, WA + Virtual", "createdBy": "user-8", "createdAt": "2026-08-12T10:00:00.000Z", "members": ["user-2", "user-7", "user-8", "user-10"] },
+    { "id": "c4", "name": "Creative Reset", "description": "Low-pressure art, music, and writing prompts for reflection.", "moderated": true, "verified": true, "format": "online", "topics": ["creativity", "reflection", "wellbeing"], "location": "Virtual", "createdBy": "user-5", "createdAt": "2026-08-16T10:00:00.000Z", "members": ["user-1", "user-5", "user-10"] },
+    { "id": "c5", "name": "Work and Accommodations", "description": "Peer ideas for returning to work and discussing workplace needs.", "moderated": true, "verified": true, "format": "online", "topics": ["work", "accommodations", "resources"], "location": "Virtual", "createdBy": "user-4", "createdAt": "2026-08-20T10:00:00.000Z", "members": ["user-3", "user-4", "user-6", "user-9"] }
   ],
   "events": [
-    {
-      "id": "e1",
-      "title": "Community Circle",
-      "date": "2026-08-08",
-      "location": "Virtual",
-      "format": "online",
-      "topic": "peer-support",
-      "host": "Rekindle Peer Team",
-      "accessibility": "Live captions enabled",
-      "safetyNote": "Moderated conversation with clear participation rules.",
-      "verified": true,
-      "rsvps": []
-    },
-    {
-      "id": "e2",
-      "title": "Resource Workshop",
-      "date": "2026-08-12",
-      "location": "Austin, TX",
-      "format": "in-person",
-      "topic": "resources",
-      "host": "Care Network Collective",
-      "accessibility": "Wheelchair accessible venue",
-      "safetyNote": "Facilitator and support volunteers present onsite.",
-      "verified": true,
-      "rsvps": []
-    },
-    {
-      "id": "e3",
-      "title": "Family Care Q&A",
-      "date": "2026-08-17",
-      "location": "Virtual",
-      "format": "online",
-      "topic": "caregiving",
-      "host": "Family Support Collective",
-      "accessibility": "Captioned recording shared after event",
-      "safetyNote": "Questions screened for respectful discussion.",
-      "verified": true,
-      "rsvps": []
-    }
+    { "id": "e1", "title": "Community Circle", "date": "2026-10-08", "location": "Virtual", "format": "online", "topic": "peer-support", "host": "Rekindle Peer Team", "accessibility": "Live captions enabled", "safetyNote": "Moderated conversation with clear participation rules.", "verified": true, "rsvps": ["user-1", "user-2", "user-4", "user-7"] },
+    { "id": "e2", "title": "Resource Workshop", "date": "2026-10-12", "location": "Austin, TX", "format": "in-person", "topic": "resources", "host": "Care Network Collective", "accessibility": "Wheelchair accessible venue", "safetyNote": "Facilitator and support volunteers present onsite.", "verified": true, "rsvps": ["user-1", "user-3", "user-5", "user-9"] },
+    { "id": "e3", "title": "Family Care Q&A", "date": "2026-10-17", "location": "Virtual", "format": "online", "topic": "caregiving", "host": "Family Support Collective", "accessibility": "Captioned recording shared after event", "safetyNote": "Questions screened for respectful discussion.", "verified": true, "rsvps": ["user-3", "user-6", "user-9"] },
+    { "id": "e4", "title": "Accessible Trail Planning", "date": "2026-10-22", "location": "Seattle, WA", "format": "hybrid", "topic": "accessibility", "host": "Accessible Outdoors", "accessibility": "Virtual participation and mobility route notes available", "safetyNote": "Route and weather plans shared before the event.", "verified": false, "rsvps": ["user-2", "user-7", "user-8", "user-10"] },
+    { "id": "e5", "title": "Creative Reset Studio", "date": "2026-10-28", "location": "Virtual", "format": "online", "topic": "wellbeing", "host": "Creative Reset", "accessibility": "Live captions and asynchronous prompt sheet", "safetyNote": "Participation is optional and cameras can remain off.", "verified": true, "rsvps": ["user-1", "user-5", "user-10"] }
+  ],
+  "moderationActions": [
+    { "id": "report-1", "reporterId": "user-4", "resourceType": "community", "resourceId": "c3", "reason": "outdated-event-details", "details": "The accessibility note needs confirmation before the next meetup.", "status": "pending_review", "createdAt": "2026-10-02T11:00:00.000Z", "reviewedAt": null, "reviewedBy": null },
+    { "id": "report-2", "reporterId": "user-3", "resourceType": "event", "resourceId": "e4", "reason": "information-update", "details": "Please confirm the mobility route details.", "status": "resolved", "createdAt": "2026-09-30T11:00:00.000Z", "reviewedAt": "2026-10-01T09:00:00.000Z", "reviewedBy": "user-4" }
+  ],
+  "blockedResources": [
+    { "id": "block-1", "userId": "user-5", "resourceType": "event", "resourceId": "e4", "resourceKey": "event:e4", "reason": "not-relevant-right-now", "createdAt": "2026-10-01T08:00:00.000Z" },
+    { "id": "block-2", "userId": "user-9", "resourceType": "community", "resourceId": "c4", "resourceKey": "community:c4", "reason": "content-preference", "createdAt": "2026-10-02T08:00:00.000Z" }
   ]
 }

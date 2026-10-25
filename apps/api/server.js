@@ -115,15 +115,29 @@ function serializeProfileUser(user) {
   };
 }
 
-function serializeDiscoverUser(user, viewer) {
+function serializeDiscoverUser(user, viewer, findUserById = () => null) {
   const isSelf = viewer && viewer.id === user.id;
   const isFollowing = Boolean(viewer && Array.isArray(viewer.following) && viewer.following.includes(user.id));
   const isFollower = Boolean(viewer && Array.isArray(viewer.followers) && viewer.followers.includes(user.id));
+  const viewerFollowerIds = new Set(Array.isArray(viewer?.followers) ? viewer.followers : []);
+  const mutualFollowerIds = (Array.isArray(user.followers) ? user.followers : [])
+    .filter(followerId => viewerFollowerIds.has(followerId));
+  const mutualFollowers = mutualFollowerIds
+    .map(followerId => findUserById(followerId))
+    .filter(follower => typeof follower?.displayName === 'string' && follower.displayName.trim())
+    .slice(0, 3)
+    .map(follower => ({
+      id: follower.id,
+      displayName: follower.displayName,
+      profile: { photoUrl: typeof follower.profile?.photoUrl === 'string' ? follower.profile.photoUrl : '' }
+    }));
   return {
     ...serializeProfileUser(user),
     email: isSelf ? user.email : undefined,
     followersCount: Array.isArray(user.followers) ? user.followers.length : 0,
     followingCount: Array.isArray(user.following) ? user.following.length : 0,
+    mutualFollowersCount: mutualFollowerIds.length,
+    mutualFollowers,
     relationship: isSelf ? 'self' : isFollowing ? 'following' : isFollower ? 'follower' : 'none'
   };
 }
@@ -150,6 +164,15 @@ function serializePost(post, author) {
     audience: post.audience,
     image: post.image || null,
     createdAt: post.createdAt,
+    author: author ? serializeProfileUser(author) : null
+  };
+}
+
+function serializeGroupMessage(message, author) {
+  return {
+    id: message.id,
+    body: message.body,
+    createdAt: message.createdAt,
     author: author ? serializeProfileUser(author) : null
   };
 }
@@ -394,11 +417,16 @@ function createInitialState(config) {
   return {
     users,
     journalEntries,
+    posts: Array.isArray(seeded?.posts) ? seeded.posts : [],
+    followRequests: Array.isArray(seeded?.followRequests) ? seeded.followRequests : [],
+    groupMessages: Array.isArray(seeded?.groupMessages) ? seeded.groupMessages : [],
     communities: communities.map(community => ({
       ...community,
       members: Array.isArray(community.members) ? community.members : []
     })),
-    events
+    events,
+    moderationActions: Array.isArray(seeded?.moderationActions) ? seeded.moderationActions : [],
+    blockedResources: Array.isArray(seeded?.blockedResources) ? seeded.blockedResources : []
   };
 }
 
@@ -721,6 +749,50 @@ function serveStatic(req, res, pathname) {
           blockedByMe: viewer ? store.isResourceBlockedByUser(viewer.id, 'community', community.id) : false
         })
       });
+      return;
+    }
+
+    const communityMessagesMatch = url.pathname.match(/^\/api\/v1\/communities\/([^/]+)\/messages$/);
+    if (communityMessagesMatch && req.method === 'GET') {
+      const user = getAuthenticatedUser(req);
+      if (!user) {
+        sendJson(res, 401, { error: 'authentication required' });
+        return;
+      }
+      const community = store.findCommunityById(communityMessagesMatch[1]);
+      if (!community) {
+        sendJson(res, 404, { error: 'group chat not found' });
+        return;
+      }
+      if (!community.members.includes(user.id)) {
+        sendJson(res, 403, { error: 'join this group chat before viewing messages' });
+        return;
+      }
+      sendJson(res, 200, {
+        messages: store.listCommunityMessages(community.id)
+          .map(message => serializeGroupMessage(message, store.findUserById(message.authorId)))
+      });
+      return;
+    }
+
+    if (communityMessagesMatch && req.method === 'POST') {
+      const user = getAuthenticatedUser(req);
+      if (!user) {
+        sendJson(res, 401, { error: 'authentication required' });
+        return;
+      }
+      try {
+        const body = await parseJsonBody(req);
+        const result = store.createCommunityMessage(communityMessagesMatch[1], user.id, body.body);
+        if (result.error) {
+          const status = result.error === 'group chat not found' ? 404 : result.error.startsWith('join') ? 403 : 400;
+          sendJson(res, status, { error: result.error });
+          return;
+        }
+        sendJson(res, 201, { message: serializeGroupMessage(result.message, user) });
+      } catch (error) {
+        sendJson(res, 400, { error: error.message });
+      }
       return;
     }
 
@@ -1106,7 +1178,7 @@ function serveStatic(req, res, pathname) {
         return;
       }
       sendJson(res, 200, {
-        users: store.listUsers().map(candidate => serializeDiscoverUser(candidate, user))
+        users: store.listUsers().map(candidate => serializeDiscoverUser(candidate, user, followerId => store.findUserById(followerId)))
       });
       return;
     }
@@ -1422,5 +1494,6 @@ if (require.main === module) {
 module.exports = {
   createServer,
   loadConfig,
-  getInfrastructureHealth
+  getInfrastructureHealth,
+  serializeDiscoverUser
 };
